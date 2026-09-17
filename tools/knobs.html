@@ -1,0 +1,694 @@
+<title>Butterfly Keyboard Knobs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F9; --surface:#FFFFFF; --raise:#FBFCFD;
+  --ink:#161A21; --ink-2:#39414F; --ink-3:#6B7585;
+  --rule:#DFE4EB; --rule-2:#EDF0F4;
+  --accent:#2440BE; --accent-soft:#E7EAFB;
+  --new:#166A4A; --new-soft:#DFF1E8;
+  --chg:#8A4A05; --chg-soft:#FBEEDC;
+  --shadow:0 1px 2px rgba(20,26,38,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1116; --surface:#161A21; --raise:#1B2029;
+    --ink:#E7EAF0; --ink-2:#B3BCCA; --ink-3:#7C8798;
+    --rule:#262D38; --rule-2:#1E242D;
+    --accent:#8FA5FF; --accent-soft:#1B2340;
+    --new:#5FD3A3; --new-soft:#12291F;
+    --chg:#E5A85C; --chg-soft:#2B2013;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1116; --surface:#161A21; --raise:#1B2029;
+  --ink:#E7EAF0; --ink-2:#B3BCCA; --ink-3:#7C8798;
+  --rule:#262D38; --rule-2:#1E242D;
+  --accent:#8FA5FF; --accent-soft:#1B2340;
+  --new:#5FD3A3; --new-soft:#12291F;
+  --chg:#E5A85C; --chg-soft:#2B2013;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font:400 15px/1.55 "IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+
+/* ---------- masthead ---------- */
+header.top{padding:56px 0 26px}
+.eyebrow{
+  font:500 11px/1 "IBM Plex Mono",monospace; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 16px;
+}
+h1{
+  font:400 clamp(38px,5.6vw,60px)/1.02 Newsreader,Georgia,serif;
+  letter-spacing:-.015em; margin:0; text-wrap:balance;
+}
+h1 em{font-style:italic;color:var(--accent)}
+.standfirst{
+  margin:16px 0 0; max-width:62ch; color:var(--ink-2); font-size:16.5px;
+}
+.counts{
+  display:flex;flex-wrap:wrap;gap:8px 10px;margin:22px 0 0;
+  font:500 12px/1 "IBM Plex Mono",monospace;color:var(--ink-3);
+}
+.counts span{
+  border:1px solid var(--rule);border-radius:2px;padding:6px 9px;background:var(--surface);
+}
+.counts b{color:var(--ink);font-weight:600}
+
+/* ---------- "if you want to change X" ---------- */
+.quick{
+  margin:34px 0 0;border-top:2px solid var(--ink);padding-top:0;
+}
+.quick h2{
+  font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:14px 0 14px;
+}
+.quick ol{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.quick li{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
+  gap:10px 28px;padding:14px 0;border-bottom:1px solid var(--rule-2);
+  align-items:baseline;
+}
+.quick li:last-child{border-bottom:none}
+.want{font-weight:500}
+.want .arrow{color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.knob{font:600 14px/1.4 "IBM Plex Mono",monospace;color:var(--accent);white-space:nowrap}
+.quick .why{color:var(--ink-2);font-size:14px}
+.quick .why code{font:500 12.5px/1 "IBM Plex Mono",monospace;color:var(--ink)}
+
+/* ---------- filter bar ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;background:var(--ground);
+  border-bottom:1px solid var(--rule);margin-top:44px;
+  padding:12px 0;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+}
+.search{
+  flex:1 1 240px;min-width:200px;display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:8px 11px;
+}
+.search input{
+  border:0;background:transparent;color:var(--ink);width:100%;outline:none;
+  font:400 14px/1.3 "IBM Plex Mono",monospace;
+}
+.search input::placeholder{color:var(--ink-3)}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font:500 11.5px/1 "IBM Plex Mono",monospace;letter-spacing:.01em;
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink-2);
+  border-radius:2px;padding:7px 9px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--h);flex:none}
+.chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:var(--raise)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hitcount{font:500 12px/1 "IBM Plex Mono",monospace;color:var(--ink-3);margin-left:auto}
+
+/* ---------- file sections ---------- */
+section.file{margin-top:46px;scroll-margin-top:76px}
+.filehead{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;
+  border-bottom:2px solid var(--h);padding-bottom:9px}
+.filehead h2{
+  font:600 17px/1.2 "IBM Plex Mono",monospace;margin:0;letter-spacing:-.01em;
+}
+.filehead .n{font:500 12px/1 "IBM Plex Mono",monospace;color:var(--ink-3);margin-left:auto}
+.fileblurb{margin:12px 0 0;color:var(--ink-2);font-size:14.5px;max-width:74ch}
+
+h3.group{
+  font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin:28px 0 8px;
+}
+.rows{display:grid;gap:0}
+.row{
+  display:grid;
+  grid-template-columns:minmax(170px,1.05fr) minmax(120px,.85fr) minmax(230px,2fr) 62px;
+  gap:6px 20px;align-items:baseline;
+  padding:11px 10px 11px 12px;border-bottom:1px solid var(--rule-2);
+  border-left:2px solid transparent;
+}
+.row:hover{background:var(--raise)}
+.row .name{font:600 13.5px/1.4 "IBM Plex Mono",monospace;word-break:break-word}
+.row .val{
+  font:500 13px/1.4 "IBM Plex Mono",monospace;color:var(--accent);
+  font-variant-numeric:tabular-nums;word-break:break-word;
+}
+.row .note{color:var(--ink-2);font-size:13.5px}
+.row .note code{font:500 12px/1 "IBM Plex Mono",monospace;color:var(--ink)}
+.row .at{
+  font:400 12px/1.4 "IBM Plex Mono",monospace;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;text-align:right;
+}
+.row.is-new{border-left-color:var(--new);background:linear-gradient(90deg,var(--new-soft),transparent 42%)}
+.row.is-chg{border-left-color:var(--chg);background:linear-gradient(90deg,var(--chg-soft),transparent 42%)}
+.flag{
+  display:inline-block;margin-left:7px;vertical-align:1px;
+  font:600 9.5px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 5px;border-radius:2px;
+}
+.flag.new{color:var(--new);background:var(--new-soft)}
+.flag.chg{color:var(--chg);background:var(--chg-soft)}
+
+.empty{padding:40px 0;color:var(--ink-3);font-size:14.5px}
+
+footer{
+  margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);
+  color:var(--ink-3);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px;
+}
+footer code{font:500 12px/1 "IBM Plex Mono",monospace}
+
+@media (max-width:760px){
+  .quick li{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr auto;gap:4px 14px}
+  .row .note{grid-column:1/-1}
+  .row .at{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+<header class="top">
+<p class="eyebrow">Butterflies VR &#183; v11 &#183; versions/v11</p>
+<h1>Every knob, and <em>where it lives</em></h1>
+<p class="standfirst">The adjustable constants across the eleven source files &#8212; what each one does, its shipped value, and the file and line to find it on. Search by name, or filter to one file.</p>
+<div class="counts"><span><b>293</b> tunables</span><span><b>229</b> in config.js</span><span><b>11</b> files</span><span><b>4</b> new or changed in v11</span></div>
+</header>
+<div class="quick"><h2>If you want to change&#8230;</h2><ol>
+<li><div class="want">Butterflies too big or too small <span class="arrow">&#8594;</span></div><div><div class="knob">CFG.wingPlane <span style="color:var(--ink-3);font-weight:400">js/config.js:506</span></div><div class="why">Not sizeMin or colSizeMin &#8212; those set <code>size</code>, the unit the pick radius, the wingbeat bob and tagBodyDrop are all quoted in.</div></div></li>
+<li><div class="want">Flight too busy or too still <span class="arrow">&#8594;</span></div><div><div class="knob">CFG.wander <span style="color:var(--ink-3);font-weight:400">js/config.js:37</span></div><div class="why">Scales all three noise amplitudes live. The amplitudes themselves live in <code>keyboard.js</code> spawn and have been cut twice.</div></div></li>
+<li><div class="want">Small wings still too small <span class="arrow">&#8594;</span></div><div><div class="knob">CFG.wingFitSeam <span style="color:var(--ink-3);font-weight:400">js/config.js:514</span></div><div class="why">The seam recentre is the part that lifts the small ones. <code>wingFitFill</code> takes more headroom overall.</div></div></li>
+<li><div class="want">Too many butterflies at once <span class="arrow">&#8594;</span></div><div><div class="knob">CFG.maxCollected <span style="color:var(--ink-3);font-weight:400">js/config.js:307</span></div><div class="why">Ceiling around 36: <code>Wings.MAX_UNIQUE</code> is 64 and the 26 keys hold 26 slots for good.</div></div></li>
+</ol></div>
+<div class="bar">
+<label class="search"><span aria-hidden="true" style="color:var(--ink-3);font:500 13px/1 'IBM Plex Mono',monospace">/</span><input id="q" type="search" placeholder="filter by name, value or note&#8230;" aria-label="Filter variables"></label>
+<div class="chips" id="chips"><button class="chip" data-f="all" aria-pressed="true">all files</button><button class="chip" data-f="config.js" aria-pressed="false" style="--h:hsl(214 58% 46%)"><span class="dot"></span>config.js</button><button class="chip" data-f="wing-gen.js" aria-pressed="false" style="--h:hsl(150 58% 46%)"><span class="dot"></span>wing-gen.js</button><button class="chip" data-f="bfly-model.js" aria-pressed="false" style="--h:hsl(28 58% 46%)"><span class="dot"></span>bfly-model.js</button><button class="chip" data-f="wing-tex.js" aria-pressed="false" style="--h:hsl(268 58% 46%)"><span class="dot"></span>wing-tex.js</button><button class="chip" data-f="wing-colour.js" aria-pressed="false" style="--h:hsl(330 58% 46%)"><span class="dot"></span>wing-colour.js</button><button class="chip" data-f="style.js" aria-pressed="false" style="--h:hsl(188 58% 46%)"><span class="dot"></span>style.js</button><button class="chip" data-f="reveal.js" aria-pressed="false" style="--h:hsl(45 58% 46%)"><span class="dot"></span>reveal.js</button><button class="chip" data-f="ui.js" aria-pressed="false" style="--h:hsl(300 58% 46%)"><span class="dot"></span>ui.js</button><button class="chip" data-f="guide.js" aria-pressed="false" style="--h:hsl(95 58% 46%)"><span class="dot"></span>guide.js</button><button class="chip" data-f="voice.js" aria-pressed="false" style="--h:hsl(340 58% 46%)"><span class="dot"></span>voice.js</button><button class="chip" data-f="dna-store.js" aria-pressed="false" style="--h:hsl(0 58% 46%)"><span class="dot"></span>dna-store.js</button><button class="chip" data-f="keyboard.js" aria-pressed="false" style="--h:hsl(105 58% 46%)"><span class="dot"></span>keyboard.js</button><button class="chip" data-f="collection.js" aria-pressed="false" style="--h:hsl(240 58% 46%)"><span class="dot"></span>collection.js</button></div>
+<div class="hitcount" id="hits">293 shown</div>
+</div>
+<section class="file" data-file="config.js" style="--h:hsl(214 58% 46%)">
+<div class="filehead"><h2>js/config.js</h2><span class="n">229</span></div>
+<p class="fileblurb">Every number the piece is built from. 228 keys. Almost everything you will want to move is here.</p>
+<h3 class="group">the room</h3>
+<div class="rows">
+<div class="row" data-s="eyey 1.60 camera height in metres. the whole scene is composed around it."><div class="name">eyeY</div><div class="val">1.60</div><div class="note">Camera height in metres. The whole scene is composed around it.</div><div class="at">config:18</div></div>
+</div>
+<h3 class="group">the swarm &#8212; the 26 keyboard butterflies</h3>
+<div class="rows">
+<div class="row" data-s="sizemin 0.45 bottom of the size band. sizefor(t) = sizemin + sizerange &#183; t^sizeexp."><div class="name">sizeMin</div><div class="val">0.45</div><div class="note">Bottom of the size band. sizeFor(t) = sizeMin + sizeRange &#183; t^sizeExp.</div><div class="at">config:30</div></div>
+<div class="row" data-s="sizerange 0.60 width of the size band above sizemin."><div class="name">sizeRange</div><div class="val">0.60</div><div class="note">Width of the size band above sizeMin.</div><div class="at">config:30</div></div>
+<div class="row" data-s="sizeexp 1.4 curve of the band. &gt;1 puts more butterflies at the small end."><div class="name">sizeExp</div><div class="val">1.4</div><div class="note">Curve of the band. >1 puts more butterflies at the small end.</div><div class="at">config:30</div></div>
+<div class="row" data-s="radmin 1.00 nearest orbit radius, metres."><div class="name">radMin</div><div class="val">1.00</div><div class="note">Nearest orbit radius, metres.</div><div class="at">config:39</div></div>
+<div class="row" data-s="radmax 2.40 furthest orbit radius, metres. the collection sits outside this."><div class="name">radMax</div><div class="val">2.40</div><div class="note">Furthest orbit radius, metres. The collection sits outside this.</div><div class="at">config:39</div></div>
+<div class="row" data-s="hgtmin 1.00 lowest flight height, metres."><div class="name">hgtMin</div><div class="val">1.00</div><div class="note">Lowest flight height, metres.</div><div class="at">config:40</div></div>
+<div class="row" data-s="hgtmax 1.95 highest flight height, metres. v9 cut this from 2.30: the keyboard is now a low dome and the collection a high one above it, so looking up past the letters means looking at nothing but your own butterflies. the only number in the keyboard's own flight v9 moves."><div class="name">hgtMax</div><div class="val">1.95</div><div class="note">Highest flight height, metres. v9 CUT THIS from 2.30: the keyboard is now a LOW dome and the collection a high one above it, so looking up past the letters means looking at nothing but your own butterflies. The only number in the keyboard's own flight v9 moves.</div><div class="at">config:40</div></div>
+<div class="row" data-s="wander 1.0 scales all three noise amplitudes live. the knob for how calm the flight is &#8212; raise this rather than editing the amplitudes in keyboard.js."><div class="name">wander</div><div class="val">1.0</div><div class="note">Scales all three noise amplitudes live. THE knob for how calm the flight is &#8212; raise this rather than editing the amplitudes in keyboard.js.</div><div class="at">config:37</div></div>
+<div class="row" data-s="arcspan math.pi * 2 radians of orbit each butterfly covers. full circle = every letter findable without turning."><div class="name">arcSpan</div><div class="val">Math.PI * 2</div><div class="note">Radians of orbit each butterfly covers. Full circle = every letter findable without turning.</div><div class="at">config:51</div></div>
+<div class="row" data-s="arcrate 0.11 sweeps per second, when the arc is not a full circle."><div class="name">arcRate</div><div class="val">0.11</div><div class="note">Sweeps per second, when the arc is not a full circle.</div><div class="at">config:52</div></div>
+<div class="row" data-s="readroll 0.84 radians of wing presented to the visitor. 0 = body face-on, wings edge-on. 0 restores v2's flight exactly."><div class="name">readRoll</div><div class="val">0.84</div><div class="note">Radians of wing presented to the visitor. 0 = body face-on, wings edge-on. 0 restores v2's flight exactly.</div><div class="at">config:57</div></div>
+</div>
+<h3 class="group">the letter under each butterfly</h3>
+<div class="rows">
+<div class="row" data-s="letterangular 0.075 world height per metre of distance &#8212; the letter stays a constant size on screen."><div class="name">letterAngular</div><div class="val">0.075</div><div class="note">World height per metre of distance &#8212; the letter stays a constant size on screen.</div><div class="at">config:63</div></div>
+<div class="row" data-s="lettermin 0.075 floor on that angular scale."><div class="name">letterMin</div><div class="val">0.075</div><div class="note">Floor on that angular scale.</div><div class="at">config:64</div></div>
+<div class="row" data-s="lettermax 0.42 ceiling on that angular scale."><div class="name">letterMax</div><div class="val">0.42</div><div class="note">Ceiling on that angular scale.</div><div class="at">config:65</div></div>
+</div>
+<h3 class="group">selection &#8212; reach, point, pinch</h3>
+<div class="rows">
+<div class="row" data-s="pickbase 0.16 metres of slack on the pick cone, close in."><div class="name">pickBase</div><div class="val">0.16</div><div class="note">Metres of slack on the pick cone, close in.</div><div class="at">config:75</div></div>
+<div class="row" data-s="pickangle 0.055 radians the cone opens by, further out."><div class="name">pickAngle</div><div class="val">0.055</div><div class="note">Radians the cone opens by, further out.</div><div class="at">config:76</div></div>
+<div class="row" data-s="touchradius 0.16 a fingertip this close beats any ray pick."><div class="name">touchRadius</div><div class="val">0.16</div><div class="note">A fingertip this close beats any ray pick.</div><div class="at">config:77</div></div>
+<div class="row" data-s="raymax 8.0 metres the aim ray reaches."><div class="name">rayMax</div><div class="val">8.0</div><div class="note">Metres the aim ray reaches.</div><div class="at">config:78</div></div>
+<div class="row" data-s="pinchon 0.033 metres, thumb tip to index tip: the pinch closes."><div class="name">pinchOn</div><div class="val">0.033</div><div class="note">Metres, thumb tip to index tip: the pinch closes.</div><div class="at">config:79</div></div>
+<div class="row" data-s="pinchoff 0.050 &#8230;and opens again. hysteresis, deliberately not one value."><div class="name">pinchOff</div><div class="val">0.050</div><div class="note">&#8230;and opens again. Hysteresis, deliberately not one value.</div><div class="at">config:80</div></div>
+<div class="row" data-s="shoulderdown 0.20 metres the estimated shoulder sits below the headset."><div class="name">shoulderDown</div><div class="val">0.20</div><div class="note">Metres the estimated shoulder sits below the headset.</div><div class="at">config:109</div></div>
+<div class="row" data-s="shoulderout 0.18 metres the estimated shoulder sits out from centre."><div class="name">shoulderOut</div><div class="val">0.18</div><div class="note">Metres the estimated shoulder sits out from centre.</div><div class="at">config:110</div></div>
+<div class="row" data-s="aimsmoothtau 0.07 seconds, ema time constant on the hand ray."><div class="name">aimSmoothTau</div><div class="val">0.07</div><div class="note">Seconds, EMA time constant on the hand ray.</div><div class="at">config:111</div></div>
+<div class="row" data-s="pickgracems 180 milliseconds a hover survives after tracking loss."><div class="name">pickGraceMs</div><div class="val">180</div><div class="note">Milliseconds a hover survives after tracking loss.</div><div class="at">config:112</div></div>
+<div class="row" data-s="hoverlockmargin 0.22 score units (0&#8211;1) a challenger must beat the held target by."><div class="name">hoverLockMargin</div><div class="val">0.22</div><div class="note">Score units (0&#8211;1) a challenger must beat the held target by.</div><div class="at">config:132</div></div>
+<div class="row" data-s="hoverlockms 250 milliseconds a sustained challenger takes to win anyway."><div class="name">hoverLockMs</div><div class="val">250</div><div class="note">Milliseconds a sustained challenger takes to win anyway.</div><div class="at">config:133</div></div>
+<div class="row" data-s="panelpickshrink 0.55 multiplies a control's own pick radius. visual size untouched."><div class="name">panelPickShrink</div><div class="val">0.55</div><div class="note">Multiplies a control's own pick radius. Visual size untouched.</div><div class="at">config:145</div></div>
+<div class="row" data-s="panelpickbase 0.06 controls-only version of pickbase."><div class="name">panelPickBase</div><div class="val">0.06</div><div class="note">Controls-only version of pickBase.</div><div class="at">config:146</div></div>
+<div class="row" data-s="paneltouchradius 0.08 controls-only version of touchradius."><div class="name">panelTouchRadius</div><div class="val">0.08</div><div class="note">Controls-only version of touchRadius.</div><div class="at">config:147</div></div>
+<div class="row is-new" data-s="mouseidlems 2000 milliseconds a motionless mouse cursor stays a pointer. a cursor does not go away when you stop using it &#8212; it sits where it was left while the swarm flies under it, hovering a fresh butterfly every couple of seconds, and every hover read as the visitor being present. the quiet clock was pinned at zero and a desktop session could never time out. going idle is what a hand does when you lower it. any movement or click brings it back next frame. must stay well under guidequietms."><div class="name">mouseIdleMs<span class="flag new">new</span></div><div class="val">2000</div><div class="note">Milliseconds a motionless mouse cursor stays a pointer. A cursor does not go away when you stop using it &#8212; it sits where it was left while the swarm flies under it, hovering a fresh butterfly every couple of seconds, and every hover read as the visitor being present. The quiet clock was pinned at zero and a desktop session could never time out. Going idle is what a hand does when you lower it. Any movement or click brings it back next frame. Must stay well under guideQuietMs.</div><div class="at">config:233</div></div>
+<div class="row" data-s="pinchsmoothtau 0.035 seconds, ema time constant on rig.pinch (which is raw and unsmoothed)."><div class="name">pinchSmoothTau</div><div class="val">0.035</div><div class="note">Seconds, EMA time constant on rig.pinch (which is raw and unsmoothed).</div><div class="at">config:158</div></div>
+<div class="row" data-s="tracklossgracems 200 milliseconds &#8212; a dropout this short holds state rather than resetting it."><div class="name">trackLossGraceMs</div><div class="val">200</div><div class="note">Milliseconds &#8212; a dropout this short holds state rather than resetting it.</div><div class="at">config:186</div></div>
+<div class="row" data-s="touchdwellms 120 milliseconds a touch must stay on one target before it can win."><div class="name">touchDwellMs</div><div class="val">120</div><div class="note">Milliseconds a touch must stay on one target before it can win.</div><div class="at">config:187</div></div>
+</div>
+<h3 class="group">feedback</h3>
+<div class="rows">
+<div class="row" data-s="hiscale 1.45 a highlighted butterfly grows to this."><div class="name">hiScale</div><div class="val">1.45</div><div class="note">A highlighted butterfly grows to this.</div><div class="at">config:190</div></div>
+<div class="row" data-s="capturetime 0.55 seconds to fly into the hand."><div class="name">captureTime</div><div class="val">0.55</div><div class="note">Seconds to fly into the hand.</div><div class="at">config:191</div></div>
+<div class="row" data-s="gonetime 0.40 seconds off-screen before it rejoins the swarm."><div class="name">goneTime</div><div class="val">0.40</div><div class="note">Seconds off-screen before it rejoins the swarm.</div><div class="at">config:192</div></div>
+<div class="row" data-s="returntime 0.60 seconds to fade back in, flying from outside."><div class="name">returnTime</div><div class="val">0.60</div><div class="note">Seconds to fade back in, flying from outside.</div><div class="at">config:193</div></div>
+<div class="row" data-s="flashtime 0.15 seconds the ray line's catch-flash takes to decay."><div class="name">flashTime</div><div class="val">0.15</div><div class="note">Seconds the ray line's catch-flash takes to decay.</div><div class="at">config:194</div></div>
+<div class="row" data-s="slowhot 0.25 time-scale for the butterfly directly under the pointer."><div class="name">slowHot</div><div class="val">0.25</div><div class="note">Time-scale for the butterfly directly under the pointer.</div><div class="at">config:204</div></div>
+<div class="row" data-s="slowradius 1.10 metres &#8212; how far that slowing reaches its neighbours."><div class="name">slowRadius</div><div class="val">1.10</div><div class="note">Metres &#8212; how far that slowing reaches its neighbours.</div><div class="at">config:205</div></div>
+<div class="row" data-s="slowease 0.35 seconds the speed change eases in and out over."><div class="name">slowEase</div><div class="val">0.35</div><div class="note">Seconds the speed change eases in and out over.</div><div class="at">config:206</div></div>
+<div class="row" data-s="slowfalloffpow 1.6 curve of that falloff with distance."><div class="name">slowFalloffPow</div><div class="val">1.6</div><div class="note">Curve of that falloff with distance.</div><div class="at">config:218</div></div>
+</div>
+<h3 class="group">the UI, fixed in front of the visitor</h3>
+<div class="rows">
+<div class="row" data-s="panelr 0.80 metres in front of the visitor the panel hangs."><div class="name">panelR</div><div class="val">0.80</div><div class="note">Metres in front of the visitor the panel hangs.</div><div class="at">config:227</div></div>
+<div class="row" data-s="namex 0.045 name field, off-centre on purpose."><div class="name">nameX</div><div class="val">0.045</div><div class="note">Name field, off-centre on purpose.</div><div class="at">config:229</div></div>
+<div class="row" data-s="namey -0.235 name field, below the eye line."><div class="name">nameY</div><div class="val">-0.235</div><div class="note">Name field, below the eye line.</div><div class="at">config:230</div></div>
+<div class="row" data-s="nametilt -0.055 radians &#8212; the whole line hung on a slope."><div class="name">nameTilt</div><div class="val">-0.055</div><div class="note">Radians &#8212; the whole line hung on a slope.</div><div class="at">config:231</div></div>
+<div class="row" data-s="namesize 0.105 letter height in the name field."><div class="name">nameSize</div><div class="val">0.105</div><div class="note">Letter height in the name field.</div><div class="at">config:232</div></div>
+<div class="row" data-s="namespacing 0.072 base advance between letters."><div class="name">nameSpacing</div><div class="val">0.072</div><div class="note">Base advance between letters.</div><div class="at">config:233</div></div>
+<div class="row" data-s="nametrack 0.80 tracking multiplier. under 1 = the letters nearly touch."><div class="name">nameTrack</div><div class="val">0.80</div><div class="note">Tracking multiplier. Under 1 = the letters nearly touch.</div><div class="at">config:234</div></div>
+<div class="row" data-s="namemaxw 1.02 metres the name may span before it condenses."><div class="name">nameMaxW</div><div class="val">1.02</div><div class="note">Metres the name may span before it condenses.</div><div class="at">config:235</div></div>
+<div class="row" data-s="namebob 0.006 metres the field drifts."><div class="name">nameBob</div><div class="val">0.006</div><div class="note">Metres the field drifts.</div><div class="at">config:236</div></div>
+<div class="row" data-s="namebobrate 0.28 cycles per second of that drift."><div class="name">nameBobRate</div><div class="val">0.28</div><div class="note">Cycles per second of that drift.</div><div class="at">config:237</div></div>
+<div class="row" data-s="nameflytime 0.65 seconds for a caught letter to reach the name."><div class="name">nameFlyTime</div><div class="val">0.65</div><div class="note">Seconds for a caught letter to reach the name.</div><div class="at">config:238</div></div>
+<div class="row" data-s="bloby -0.435 height of the two flower controls."><div class="name">blobY</div><div class="val">-0.435</div><div class="note">Height of the two flower controls.</div><div class="at">config:249</div></div>
+<div class="row" data-s="blobw 0.160 one lobe's radius; the cluster is ~2.9&#215; this across."><div class="name">blobW</div><div class="val">0.160</div><div class="note">One lobe's radius; the cluster is ~2.9&#215; this across.</div><div class="at">config:250</div></div>
+<div class="row" data-s="blobh 0.140 lobe height."><div class="name">blobH</div><div class="val">0.140</div><div class="note">Lobe height.</div><div class="at">config:251</div></div>
+<div class="row" data-s="ctlgap 0.82 metres between the two controls, centre to centre."><div class="name">ctlGap</div><div class="val">0.82</div><div class="note">Metres between the two controls, centre to centre.</div><div class="at">config:252</div></div>
+<div class="row" data-s="blobpulse 0.045 depth of the breathing."><div class="name">blobPulse</div><div class="val">0.045</div><div class="note">Depth of the breathing.</div><div class="at">config:253</div></div>
+<div class="row" data-s="blobdrift 0.022 how far a shape floats from where it hangs."><div class="name">blobDrift</div><div class="val">0.022</div><div class="note">How far a shape floats from where it hangs.</div><div class="at">config:254</div></div>
+<div class="row" data-s="ctlspring 150 stiffness of the press spring."><div class="name">ctlSpring</div><div class="val">150</div><div class="note">Stiffness of the press spring.</div><div class="at">config:259</div></div>
+<div class="row" data-s="ctldamp 0.86 per frame at 60 fps. under 1 = it rings."><div class="name">ctlDamp</div><div class="val">0.86</div><div class="note">Per frame at 60 fps. Under 1 = it rings.</div><div class="at">config:260</div></div>
+<div class="row" data-s="ctlkick 7.5 impulse a press adds to the velocity."><div class="name">ctlKick</div><div class="val">7.5</div><div class="note">Impulse a press adds to the velocity.</div><div class="at">config:261</div></div>
+<div class="row" data-s="acceptconfirmkick 16 roughly 2&#215; ctlkick, on accept only."><div class="name">acceptConfirmKick</div><div class="val">16</div><div class="note">Roughly 2&#215; ctlKick, on accept only.</div><div class="at">config:270</div></div>
+<div class="row" data-s="maxname 16 longest name the field will take."><div class="name">maxName</div><div class="val">16</div><div class="note">Longest name the field will take.</div><div class="at">config:272</div></div>
+<div class="row is-chg" data-s="acceptresetdelay 20000 milliseconds before an abandoned name clears itself. a fallback, not the timing &#8212; the reset normally comes from the reveal's own launch at about nine seconds. v11 cancels this timer in reset(), because left armed it fired eleven seconds into the next name and wiped it."><div class="name">acceptResetDelay<span class="flag chg">v11</span></div><div class="val">20000</div><div class="note">Milliseconds before an abandoned name clears itself. A FALLBACK, not the timing &#8212; the reset normally comes from the reveal's own launch at about nine seconds. v11 cancels this timer in reset(), because left armed it fired eleven seconds into the NEXT name and wiped it.</div><div class="at">config:335</div></div>
+<div class="row" data-s="nameexittime 2.0 seconds for a name letter to burst away and fade (sim time, not wall clock)."><div class="name">nameExitTime</div><div class="val">2.0</div><div class="note">Seconds for a name letter to burst away and fade (sim time, not wall clock).</div><div class="at">config:296</div></div>
+<div class="row" data-s="nameexitdrop 1.30 metres it falls over that &#8212; accelerating, like blast wash."><div class="name">nameExitDrop</div><div class="val">1.30</div><div class="note">Metres it falls over that &#8212; accelerating, like blast wash.</div><div class="at">config:297</div></div>
+<div class="row" data-s="nameexitspread 0.55 metres it also fans horizontally as it goes."><div class="name">nameExitSpread</div><div class="val">0.55</div><div class="note">Metres it also fans horizontally as it goes.</div><div class="at">config:298</div></div>
+</div>
+<h3 class="group">the collection &#8212; the kaleidoscope that accumulates</h3>
+<div class="rows">
+<div class="row" data-s="maxcollected 12 how many render at once; the rest stay in storage. ceiling ~36 before wings.max_unique bites."><div class="name">maxCollected</div><div class="val">12</div><div class="note">How many render at once; the rest stay in storage. Ceiling ~36 before Wings.MAX_UNIQUE bites.</div><div class="at">config:307</div></div>
+<div class="row" data-s="colradmin 1.7 nearest collection orbit. v9 brought the whole band in as well as up &#8212; closer and higher work together: at 1.7 m out it takes only 2.2 m of height to clear the letters, where at 2.6 m it would have taken 2.9."><div class="name">colRadMin</div><div class="val">1.7</div><div class="note">Nearest collection orbit. v9 brought the whole band IN as well as up &#8212; closer and higher work together: at 1.7 m out it takes only 2.2 m of height to clear the letters, where at 2.6 m it would have taken 2.9.</div><div class="at">config:337</div></div>
+<div class="row" data-s="colradmax 3.0 furthest collection orbit. overlaps the keyboard's 1.0&#8211;2.4 in plan on purpose: the two are separated in height, so they sit at different elevations rather than merely different depths along one ray."><div class="name">colRadMax</div><div class="val">3.0</div><div class="note">Furthest collection orbit. Overlaps the keyboard's 1.0&#8211;2.4 in plan on purpose: the two are separated in HEIGHT, so they sit at different elevations rather than merely different depths along one ray.</div><div class="at">config:337</div></div>
+<div class="row" data-s="colhgtmin 2.2 bottom of the collection's dome &#8212; above the letters entirely. it used to be 0.8, which put the whole kaleidoscope inside the letters' angular span, so every collected butterfly had letters in front of it from somewhere and the pick could not get past them."><div class="name">colHgtMin</div><div class="val">2.2</div><div class="note">Bottom of the collection's dome &#8212; above the letters entirely. It used to be 0.8, which put the whole kaleidoscope INSIDE the letters' angular span, so every collected butterfly had letters in front of it from somewhere and the pick could not get past them.</div><div class="at">config:338</div></div>
+<div class="row" data-s="colhgtmax 3.1 top of it. kept under 3.1 deliberately: in ar passthrough anything higher goes through a real ceiling."><div class="name">colHgtMax</div><div class="val">3.1</div><div class="note">Top of it. Kept under 3.1 deliberately: in AR passthrough anything higher goes through a real ceiling.</div><div class="at">config:338</div></div>
+<div class="row" data-s="colsizemin 0.6 bottom of the collection's size band."><div class="name">colSizeMin</div><div class="val">0.6</div><div class="note">Bottom of the collection's size band.</div><div class="at">config:313</div></div>
+<div class="row" data-s="colsizerange 0.9 width of it. a touch bigger than the keys, to carry the distance."><div class="name">colSizeRange</div><div class="val">0.9</div><div class="note">Width of it. A touch bigger than the keys, to carry the distance.</div><div class="at">config:313</div></div>
+<div class="row" data-s="presentdist 0.80 metres in front for the 'here's your butterfly' beat &#8212; inside the keyboard's orbit."><div class="name">presentDist</div><div class="val">0.80</div><div class="note">Metres in front for the 'here's your butterfly' beat &#8212; inside the keyboard's orbit.</div><div class="at">config:318</div></div>
+<div class="row" data-s="presentrise 0.06 metres above the eye line for that beat."><div class="name">presentRise</div><div class="val">0.06</div><div class="note">Metres above the eye line for that beat.</div><div class="at">config:319</div></div>
+<div class="row" data-s="presentsize 0.78 held at a comfortable size there, whatever its orbit size will be."><div class="name">presentSize</div><div class="val">0.78</div><div class="note">Held at a comfortable size there, whatever its orbit size will be.</div><div class="at">config:320</div></div>
+</div>
+<h3 class="group">calling a collected butterfly over (v9) &#8212; selecting one</h3>
+<div class="rows">
+<div class="row" data-s="colpickradius 0.20 pick sphere, multiplying the butterfly's own size. the keys' own rule, so a collected one is no easier or harder to hit than a letter."><div class="name">colPickRadius</div><div class="val">0.20</div><div class="note">Pick sphere, multiplying the butterfly's own size. The keys' own rule, so a collected one is no easier or harder to hit than a letter.</div><div class="at">config:575</div></div>
+<div class="row" data-s="colhiscale 1.20 how much a highlighted one grows. lower than the keys' hiscale 1.45 &#8212; these are bigger and further away."><div class="name">colHiScale</div><div class="val">1.20</div><div class="note">How much a highlighted one grows. Lower than the keys' hiScale 1.45 &#8212; these are bigger and further away.</div><div class="at">config:576</div></div>
+<div class="row" data-s="summonmax 1 how many can be called over at once. calling another sends the longest-held one home rather than refusing."><div class="name">summonMax</div><div class="val">1</div><div class="note">How many can be called over at once. Calling another sends the longest-held one home rather than refusing.</div><div class="at">config:577</div></div>
+<div class="row" data-s="colbeatskey 0.45 the key layer's veto is a margin, not an absolute. a key's cone is enormous in angular terms &#8212; 20&#176; wide for a big one at 1 m &#8212; so an absolute veto meant any letter drifting anywhere near the line blocked a butterfly you were aimed squarely at: 42% of attempts. a collected butterfly now takes the pick when its score is better by this much. measured over both shipped bands, blocked attempts went 42% &#8594; 1.1%, with 0 of 6000 letters lost the other way. 0 restores the absolute veto."><div class="name">colBeatsKey</div><div class="val">0.45</div><div class="note">THE KEY LAYER'S VETO IS A MARGIN, NOT AN ABSOLUTE. A key's cone is enormous in angular terms &#8212; 20&#176; wide for a big one at 1 m &#8212; so an absolute veto meant any letter drifting anywhere near the line blocked a butterfly you were aimed squarely at: 42% of attempts. A collected butterfly now takes the pick when its score is better by this much. Measured over both shipped bands, blocked attempts went 42% &#8594; 1.1%, with 0 of 6000 letters lost the other way. 0 restores the absolute veto.</div><div class="at">config:628</div></div>
+</div>
+<h3 class="group">&#8230;it flies over</h3>
+<div class="rows">
+<div class="row" data-s="summonspeed 0.75 metres/sec cruising in. a cruise, not a lerp: a lerp is fastest when furthest away, which is backwards for something flying to your hand."><div class="name">summonSpeed</div><div class="val">0.75</div><div class="note">Metres/sec cruising in. A cruise, not a lerp: a lerp is fastest when furthest away, which is backwards for something flying to your hand.</div><div class="at">config:595</div></div>
+<div class="row" data-s="summonspeednear 0.22 metres/sec at the very end, so it arrives settled rather than stopping dead."><div class="name">summonSpeedNear</div><div class="val">0.22</div><div class="note">Metres/sec at the very end, so it arrives settled rather than stopping dead.</div><div class="at">config:596</div></div>
+<div class="row" data-s="summonease 0.60 metres over which it eases from one to the other. at the first pass (1.00 m) the crawl over the last metre dominated the trip."><div class="name">summonEase</div><div class="val">0.60</div><div class="note">Metres over which it eases from one to the other. At the first pass (1.00 m) the crawl over the last metre dominated the trip.</div><div class="at">config:597</div></div>
+<div class="row" data-s="summonsway 0.09 metres of side-to-side drift on the way in &#8212; what stops the approach reading as a dolly move."><div class="name">summonSway</div><div class="val">0.09</div><div class="note">Metres of side-to-side drift on the way in &#8212; what stops the approach reading as a dolly move.</div><div class="at">config:598</div></div>
+<div class="row" data-s="summonbob 0.05 metres of rise and fall with it."><div class="name">summonBob</div><div class="val">0.05</div><div class="note">Metres of rise and fall with it.</div><div class="at">config:599</div></div>
+<div class="row" data-s="summonswayrate 1.5 radians/sec of both. added as a velocity, so the fade-out near the target can never step."><div class="name">summonSwayRate</div><div class="val">1.5</div><div class="note">Radians/sec of both. Added as a VELOCITY, so the fade-out near the target can never step.</div><div class="at">config:600</div></div>
+<div class="row" data-s="summonarrive 0.085 metres from the target that counts as arrived."><div class="name">summonArrive</div><div class="val">0.085</div><div class="note">Metres from the target that counts as arrived.</div><div class="at">config:601</div></div>
+<div class="row" data-s="summongiveup 30 seconds before it gives up and goes home &#8212; a safety net for a palm it can never quite reach."><div class="name">summonGiveUp</div><div class="val">30</div><div class="note">Seconds before it gives up and goes home &#8212; a safety net for a palm it can never quite reach.</div><div class="at">config:602</div></div>
+</div>
+<h3 class="group">&#8230;no hand: it hovers in front of you</h3>
+<div class="rows">
+<div class="row" data-s="hoverdist 0.62 metres in front &#8212; inside the keyboard's 1.00 orbit."><div class="name">hoverDist</div><div class="val">0.62</div><div class="note">Metres in front &#8212; inside the keyboard's 1.00 orbit.</div><div class="at">config:679</div></div>
+<div class="row" data-s="hoverrise 0.08 metres above the eye line. below it, a butterfly at 0.62 m covers the name field and the two controls."><div class="name">hoverRise</div><div class="val">0.08</div><div class="note">Metres ABOVE the eye line. Below it, a butterfly at 0.62 m covers the name field and the two controls.</div><div class="at">config:680</div></div>
+<div class="row" data-s="hoversize 0.62 held at a comfortable size, whatever its orbit size is."><div class="name">hoverSize</div><div class="val">0.62</div><div class="note">Held at a comfortable size, whatever its orbit size is.</div><div class="at">config:681</div></div>
+<div class="row" data-s="hoverdwell 7.0 seconds it waits for a hand before it gives up and leaves."><div class="name">hoverDwell</div><div class="val">7.0</div><div class="note">Seconds it waits for a hand before it gives up and leaves.</div><div class="at">config:682</div></div>
+<div class="row" data-s="hoverspanx 0.14 metres it wanders side to side. it flies while it waits &#8212; the first pass held it in the reveal's flat pinned-specimen pose and it read as a diagram of a butterfly rather than a butterfly."><div class="name">hoverSpanX</div><div class="val">0.14</div><div class="note">Metres it wanders side to side. IT FLIES while it waits &#8212; the first pass held it in the reveal's flat pinned-specimen pose and it read as a diagram of a butterfly rather than a butterfly.</div><div class="at">config:690</div></div>
+<div class="row" data-s="hoverspany 0.09 metres up and down."><div class="name">hoverSpanY</div><div class="val">0.09</div><div class="note">Metres up and down.</div><div class="at">config:691</div></div>
+<div class="row" data-s="hoverspanz 0.06 metres toward and away &#8212; least, or it keeps changing size."><div class="name">hoverSpanZ</div><div class="val">0.06</div><div class="note">Metres toward and away &#8212; least, or it keeps changing size.</div><div class="at">config:692</div></div>
+<div class="row" data-s="hoverrate 9 multiplies the butterfly's own orbit noise frequencies, so no two wait the same way. cut from 20 on the second pass &#8212; a full wander now takes 3&#8211;6 s. measured over the whole 7 s wait: 0.09 m of drift at a 0.19 m/s peak, against 0.24 m at 0.36 before."><div class="name">hoverRate</div><div class="val">9</div><div class="note">Multiplies the butterfly's OWN orbit noise frequencies, so no two wait the same way. Cut from 20 on the second pass &#8212; a full wander now takes 3&#8211;6 s. Measured over the whole 7 s wait: 0.09 m of drift at a 0.19 m/s peak, against 0.24 m at 0.36 before.</div><div class="at">config:693</div></div>
+<div class="row" data-s="hoverease 0.40 seconds of lag onto the wandering point. this is the damping &#8212; raise it to calm the movement without making it smaller. the wander is applied to the target and the position lags it; steering the position directly leaves everything chasing noise."><div class="name">hoverEase</div><div class="val">0.40</div><div class="note">Seconds of lag onto the wandering point. THIS is the damping &#8212; raise it to calm the movement without making it smaller. The wander is applied to the target and the position lags it; steering the position directly leaves everything chasing noise.</div><div class="at">config:694</div></div>
+<div class="row" data-s="hoverswayyaw 0.30 radians the held heading sways either side, about 17&#176;. the heading is held, not chased: following its own travel direction swung the body a full half turn every time the wander reversed &#8212; 4.6 rad of yaw in 3.3 s, which is what read as frantic. it now holds broadside to the visitor (facing them square is the one heading at which the wing plane can never face them either) and sways about it: 0.9 rad over the same window."><div class="name">hoverSwayYaw</div><div class="val">0.30</div><div class="note">Radians the held heading sways either side, about 17&#176;. THE HEADING IS HELD, NOT CHASED: following its own travel direction swung the body a full half turn every time the wander reversed &#8212; 4.6 rad of yaw in 3.3 s, which is what read as frantic. It now holds BROADSIDE to the visitor (facing them square is the one heading at which the wing plane can never face them either) and sways about it: 0.9 rad over the same window.</div><div class="at">config:708</div></div>
+<div class="row" data-s="hoverturn 0.9 seconds the yaw takes to ease onto that heading. long, so the sway reads as a drift rather than a turn. also covers the arrival, where it turns from the heading it flew in on to the nearer broadside &#8212; at most a quarter turn, because the side is chosen as the shorter one."><div class="name">hoverTurn</div><div class="val">0.9</div><div class="note">Seconds the yaw takes to ease onto that heading. Long, so the sway reads as a drift rather than a turn. Also covers the arrival, where it turns from the heading it flew in on to the nearer broadside &#8212; at most a quarter turn, because the side is chosen as the shorter one.</div><div class="at">config:709</div></div>
+<div class="row" data-s="hoversettle 0.7 seconds the wander ramps in over as it arrives. without it the target jumps on the first frame of the hover and it lunges at the visitor's face at 1.0 m/s; ramped, the peak over the whole wait is 0.36."><div class="name">hoverSettle</div><div class="val">0.7</div><div class="note">Seconds the wander ramps in over as it arrives. Without it the target jumps on the first frame of the hover and it lunges at the visitor's face at 1.0 m/s; ramped, the peak over the whole wait is 0.36.</div><div class="at">config:710</div></div>
+</div>
+<h3 class="group">&#8230;a hand: it lands on it</h3>
+<div class="rows">
+<div class="row" data-s="perchyawmin 60 degrees (this file is otherwise radians; these two are not). how far across the visitor's view it sits when perched. the body is one plane through the body axis, so head-on the visitor looks straight down its length and it disappears &#8212; two wings with nothing joining them. drawn fresh each landing between the two, and the side is drawn too. set both to 0 for the head-on pose."><div class="name">perchYawMin</div><div class="val">60</div><div class="note">DEGREES (this file is otherwise radians; these two are not). How far across the visitor's view it sits when perched. The body is ONE PLANE through the body axis, so head-on the visitor looks straight down its length and it disappears &#8212; two wings with nothing joining them. Drawn fresh each landing between the two, and the side is drawn too. Set both to 0 for the head-on pose.</div><div class="at">config:714</div></div>
+<div class="row" data-s="perchyawmax 70 the other end of that draw. set both the same to pin it."><div class="name">perchYawMax</div><div class="val">70</div><div class="note">The other end of that draw. Set both the same to pin it.</div><div class="at">config:715</div></div>
+<div class="row" data-s="perchsize 0.50 about 18 cm across the wings against a ~9 cm palm. the number to move if the perch looks wrong in the headset."><div class="name">perchSize</div><div class="val">0.50</div><div class="note">About 18 cm across the wings against a ~9 cm palm. THE number to move if the perch looks wrong in the headset.</div><div class="at">config:734</div></div>
+<div class="row" data-s="perchpitch 0.205 it stands nose-up, because the legs are not all the same length (v9.2). body_alpha draws a body in flight seen side-on &#8212; front legs long and forward, hind pair short and swept back &#8212; so laid flat on the deepest leg the hind tips floated 22 and 25 mm over the palm and the tail end of the butterfly did not rest on the hand at all. radians of nose-up tilt, about the wing span axis so the wings stay level across the palm and only tip fore-and-aft. 0.205 (11.8&#176;) is the least-squares line through the four measured leg tips: hind pair down within a millimetre, mid pair 8.6 mm into the hand. 0.323 is the lower hull &#8212; nothing sinks, three of four land exactly, but 18.5&#176; reads as rearing rather than settling. set 0 for v9.1's flat pose."><div class="name">perchPitch</div><div class="val">0.205</div><div class="note">IT STANDS NOSE-UP, because the legs are not all the same length (v9.2). BODY_ALPHA draws a body in FLIGHT seen side-on &#8212; front legs long and forward, hind pair short and swept back &#8212; so laid flat on the deepest leg the hind tips floated 22 and 25 mm over the palm and the tail end of the butterfly did not rest on the hand at all. Radians of nose-up tilt, about the wing SPAN axis so the wings stay level across the palm and only tip fore-and-aft. 0.205 (11.8&#176;) is the least-squares line through the four measured leg tips: hind pair down within a millimetre, mid pair 8.6 mm into the hand. 0.323 is the lower hull &#8212; nothing sinks, three of four land exactly, but 18.5&#176; reads as rearing rather than settling. Set 0 for v9.1's flat pose.</div><div class="at">config:789</div></div>
+<div class="row" data-s="perchlegdrop 0.1145 it stands on its legs. per unit model size, how far the legs' contact line sits below the model's origin &#8212; and the origin is the wing hinge, so placing that on the palm (which the first pass did) buried the body and every leg in the hand, about 52 mm of it. measured off body_alpha itself: decode it, threshold at the material's own alphatest of 0.5, label the four leg strands, and fit the line perchpitch pitches onto; the drop is measured perpendicular to it. was 0.1406, the single lowest painted pixel, while the pose was flat. cross-check: tagbodydrop, measured independently for the name tag, is &#8722;0.135."><div class="name">perchLegDrop</div><div class="val">0.1145</div><div class="note">IT STANDS ON ITS LEGS. Per unit model size, how far the legs' CONTACT LINE sits below the model's origin &#8212; and the origin is the WING HINGE, so placing that on the palm (which the first pass did) buried the body and every leg in the hand, about 52 mm of it. Measured off BODY_ALPHA itself: decode it, threshold at the material's own alphaTest of 0.5, label the four leg strands, and fit the line perchPitch pitches onto; the drop is measured perpendicular to it. Was 0.1406, the single lowest painted pixel, while the pose was flat. Cross-check: tagBodyDrop, measured independently for the name tag, is &#8722;0.135.</div><div class="at">config:790</div></div>
+<div class="row" data-s="perchlift 0.002 metres of clearance between that contact line and the palm. negative sinks it in."><div class="name">perchLift</div><div class="val">0.002</div><div class="note">Metres of clearance between that contact line and the palm. Negative sinks it in.</div><div class="at">config:791</div></div>
+<div class="row" data-s="perchfollow 0.05 seconds of lag following the hand. a butterfly welded to a jittering palm reads as a decal."><div class="name">perchFollow</div><div class="val">0.05</div><div class="note">Seconds of lag following the hand. A butterfly welded to a jittering palm reads as a decal.</div><div class="at">config:637</div></div>
+<div class="row" data-s="perchdwell 12.0 seconds it stays, if the hand stays."><div class="name">perchDwell</div><div class="val">12.0</div><div class="note">Seconds it stays, if the hand stays.</div><div class="at">config:638</div></div>
+<div class="row" data-s="perchsettle 0.30 seconds of folding its wings down out of the approach as it touches."><div class="name">perchSettle</div><div class="val">0.30</div><div class="note">Seconds of folding its wings down out of the approach as it touches.</div><div class="at">config:639</div></div>
+<div class="row" data-s="perchrest -0.30 radians of dihedral at rest."><div class="name">perchRest</div><div class="val">-0.30</div><div class="note">Radians of dihedral at rest.</div><div class="at">config:640</div></div>
+<div class="row" data-s="perchflutterevery 2.4 seconds between flutters, jittered &#215;0.6&#8211;1.5 so two butterflies never sync up."><div class="name">perchFlutterEvery</div><div class="val">2.4</div><div class="note">Seconds between flutters, jittered &#215;0.6&#8211;1.5 so two butterflies never sync up.</div><div class="at">config:646</div></div>
+<div class="row" data-s="perchflutterfor 0.55 seconds each flutter lasts &#8212; three strokes under one envelope."><div class="name">perchFlutterFor</div><div class="val">0.55</div><div class="note">Seconds each flutter lasts &#8212; three strokes under one envelope.</div><div class="at">config:647</div></div>
+<div class="row" data-s="perchflutteramp 0.75 radians at the top of one."><div class="name">perchFlutterAmp</div><div class="val">0.75</div><div class="note">Radians at the top of one.</div><div class="at">config:648</div></div>
+</div>
+<h3 class="group">&#8230;and it goes back</h3>
+<div class="rows">
+<div class="row" data-s="leavetime 3.0 seconds from wherever it is back onto its orbit."><div class="name">leaveTime</div><div class="val">3.0</div><div class="note">Seconds from wherever it is back onto its orbit.</div><div class="at">config:656</div></div>
+<div class="row" data-s="leavelift 0.30 metres it arcs upward at the midpoint of that."><div class="name">leaveLift</div><div class="val">0.30</div><div class="note">Metres it arcs upward at the midpoint of that.</div><div class="at">config:657</div></div>
+<div class="row" data-s="leavebank 0.22 radians of bank through the turn away, peaking mid-departure."><div class="name">leaveBank</div><div class="val">0.22</div><div class="note">Radians of bank through the turn away, peaking mid-departure.</div><div class="at">config:658</div></div>
+<div class="row" data-s="leavearc 0.55 radians round its own ring ahead of the point it left from &#8212; turns a radial exit into a curve."><div class="name">leaveArc</div><div class="val">0.55</div><div class="note">Radians round its own ring ahead of the point it left from &#8212; turns a radial exit into a curve.</div><div class="at">config:659</div></div>
+</div>
+<h3 class="group">the posture that means &#8220;land here&#8221; (hands.js:palmPose)</h3>
+<div class="rows">
+<div class="row" data-s="palmeitherface true true: the offer is a hand held out flat and horizontal, either way up, and the butterfly lands on whichever face points at the sky &#8212; the back of the hand, when the palm is turned down. the narration asks for palm-down, and under v9.2's palm-up-only rule following it exactly took the hover-then-leave branch. false restores v9.2 exactly."><div class="name">palmEitherFace</div><div class="val">true</div><div class="note">true: the offer is a hand held out flat and HORIZONTAL, either way up, and the butterfly lands on whichever face points at the sky &#8212; the back of the hand, when the palm is turned down. The narration asks for palm-down, and under v9.2's palm-up-only rule following it exactly took the hover-then-leave branch. false restores v9.2 exactly.</div><div class="at">config:851</div></div>
+<div class="row" data-s="palmupdot 0.62 dot(palm normal, world up) &#8212; about 52&#176; off vertical. generous on purpose: the failure mode of a tight threshold is an interaction that mysteriously does not work."><div class="name">palmUpDot</div><div class="val">0.62</div><div class="note">dot(palm normal, world up) &#8212; about 52&#176; off vertical. Generous on purpose: the failure mode of a tight threshold is an interaction that mysteriously does not work.</div><div class="at">config:682</div></div>
+<div class="row" data-s="palmflatextend 1.45 mean fingertip-to-wrist distance, in palm widths. ~1.9 flat, ~1.0 in a fist &#8212; a wide gap, and the test doing the work."><div class="name">palmFlatExtend</div><div class="val">1.45</div><div class="note">Mean fingertip-to-wrist distance, in PALM WIDTHS. ~1.9 flat, ~1.0 in a fist &#8212; a wide gap, and the test doing the work.</div><div class="at">config:683</div></div>
+<div class="row" data-s="palmflatoffset 0.62 mean fingertip distance off the palm plane, in palm widths. ~0.2 flat, 0.5&#8211;0.75 curled. a lenient backstop against a cupped hand."><div class="name">palmFlatOffset</div><div class="val">0.62</div><div class="note">Mean fingertip distance off the palm plane, in palm widths. ~0.2 flat, 0.5&#8211;0.75 curled. A lenient backstop against a cupped hand.</div><div class="at">config:684</div></div>
+<div class="row" data-s="palmraisebeloweye 0.50 metres under the headset the palm may be and still count as raised &#8212; not metres off the floor, so it works seated and at any height."><div class="name">palmRaiseBelowEye</div><div class="val">0.50</div><div class="note">Metres under the HEADSET the palm may be and still count as raised &#8212; not metres off the floor, so it works seated and at any height.</div><div class="at">config:685</div></div>
+<div class="row" data-s="palmholdms 220 ms the whole pose must hold before it counts as an offer."><div class="name">palmHoldMs</div><div class="val">220</div><div class="note">Ms the whole pose must hold before it counts as an offer.</div><div class="at">config:686</div></div>
+<div class="row" data-s="palmgracems 320 ms it must be gone before the offer is withdrawn. a tracking dropout is not a withdrawn hand."><div class="name">palmGraceMs</div><div class="val">320</div><div class="note">Ms it must be gone before the offer is withdrawn. A tracking dropout is not a withdrawn hand.</div><div class="at">config:687</div></div>
+<div class="row" data-s="palmsimout 0.42 the desktop stand-in: metres in front of the camera space puts a synthetic palm. refused inside an xr session."><div class="name">palmSimOut</div><div class="val">0.42</div><div class="note">THE DESKTOP STAND-IN: metres in front of the camera SPACE puts a synthetic palm. Refused inside an XR session.</div><div class="at">config:694</div></div>
+<div class="row" data-s="palmsimdrop 0.40 &#8230;and metres below it."><div class="name">palmSimDrop</div><div class="val">0.40</div><div class="note">&#8230;and metres below it.</div><div class="at">config:695</div></div>
+</div>
+<h3 class="group">the reveal &#8212; nine beats, ~14 s</h3>
+<div class="rows">
+<div class="row" data-s="revealcharge 1.8 seconds of anticipation between accept and the bloom."><div class="name">revealCharge</div><div class="val">1.8</div><div class="note">Seconds of anticipation between ACCEPT and the bloom.</div><div class="at">config:359</div></div>
+<div class="row" data-s="revealarrive 0.9 seconds of the bloom &#8212; the overshoot scale-up from 0."><div class="name">revealArrive</div><div class="val">0.9</div><div class="note">Seconds of the bloom &#8212; the overshoot scale-up from 0.</div><div class="at">config:361</div></div>
+<div class="row" data-s="revealpopover 0.42 overshoot hump past full size mid-bloom, as a fraction."><div class="name">revealPopOver</div><div class="val">0.42</div><div class="note">Overshoot hump past full size mid-bloom, as a fraction.</div><div class="at">config:366</div></div>
+<div class="row" data-s="revealarriveburst 15 letters flung outward as it blooms."><div class="name">revealArriveBurst</div><div class="val">15</div><div class="note">Letters flung outward as it blooms.</div><div class="at">config:367</div></div>
+<div class="row" data-s="revealarriveburstspd 1.05 metres/sec they are thrown."><div class="name">revealArriveBurstSpd</div><div class="val">1.05</div><div class="note">Metres/sec they are thrown.</div><div class="at">config:368</div></div>
+<div class="row" data-s="revealsettle 1.8 seconds held flat and breathing after it arrives."><div class="name">revealSettle</div><div class="val">1.8</div><div class="note">Seconds held flat and breathing after it arrives.</div><div class="at">config:369</div></div>
+<div class="row" data-s="revealgreet 1.8 seconds of the greeting flutters."><div class="name">revealGreet</div><div class="val">1.8</div><div class="note">Seconds of the greeting flutters.</div><div class="at">config:370</div></div>
+<div class="row" data-s="revealstill 0.8 seconds of complete stillness before the coil."><div class="name">revealStill</div><div class="val">0.8</div><div class="note">Seconds of complete stillness before the coil.</div><div class="at">config:371</div></div>
+<div class="row" data-s="revealcoil 0.4 seconds of anticipation &#8212; the dip before the launch."><div class="name">revealCoil</div><div class="val">0.4</div><div class="note">Seconds of anticipation &#8212; the dip before the launch.</div><div class="at">config:372</div></div>
+<div class="row" data-s="reveallaunch 1.1 seconds of the upward shot."><div class="name">revealLaunch</div><div class="val">1.1</div><div class="note">Seconds of the upward shot.</div><div class="at">config:373</div></div>
+<div class="row" data-s="revealsoar 2.7 seconds from the top of the shot out to its orbit."><div class="name">revealSoar</div><div class="val">2.7</div><div class="note">Seconds from the top of the shot out to its orbit.</div><div class="at">config:374</div></div>
+<div class="row" data-s="revealflapamp 0.11 dihedral of the breath, radians."><div class="name">revealFlapAmp</div><div class="val">0.11</div><div class="note">Dihedral of the breath, radians.</div><div class="at">config:380</div></div>
+<div class="row" data-s="revealflaprate 1.9 radians/sec of that breath &#8212; about 0.3 hz."><div class="name">revealFlapRate</div><div class="val">1.9</div><div class="note">Radians/sec of that breath &#8212; about 0.3 Hz.</div><div class="at">config:381</div></div>
+<div class="row" data-s="revealgreetbeats 3 how many greeting flutters."><div class="name">revealGreetBeats</div><div class="val">3</div><div class="note">How many greeting flutters.</div><div class="at">config:390</div></div>
+<div class="row" data-s="revealgreetbeat 0.38 seconds of movement in each 0.60 s slot; the rest is the pause."><div class="name">revealGreetBeat</div><div class="val">0.38</div><div class="note">Seconds of movement in each 0.60 s slot; the rest is the pause.</div><div class="at">config:391</div></div>
+<div class="row" data-s="revealgreetamp 0.85 radians of dihedral at the top of a flutter."><div class="name">revealGreetAmp</div><div class="val">0.85</div><div class="note">Radians of dihedral at the top of a flutter.</div><div class="at">config:392</div></div>
+<div class="row" data-s="revealgreetlift 0.02 metres the body rises on the stroke."><div class="name">revealGreetLift</div><div class="val">0.02</div><div class="note">Metres the body rises on the stroke.</div><div class="at">config:393</div></div>
+<div class="row" data-s="revealcoildip 0.08 metres it sinks into the coil."><div class="name">revealCoilDip</div><div class="val">0.08</div><div class="note">Metres it sinks into the coil.</div><div class="at">config:400</div></div>
+<div class="row" data-s="revealcoilflap -1.05 radians &#8212; wings drawn up together, ready. negative is wings-up."><div class="name">revealCoilFlap</div><div class="val">-1.05</div><div class="note">Radians &#8212; wings drawn up together, ready. Negative is wings-up.</div><div class="at">config:401</div></div>
+<div class="row" data-s="revealcoilsquash 0.93 scale multiplier at the bottom of the dip."><div class="name">revealCoilSquash</div><div class="val">0.93</div><div class="note">Scale multiplier at the bottom of the dip.</div><div class="at">config:402</div></div>
+<div class="row" data-s="reveallaunchrise 1.60 metres it gains, most of it in the first third."><div class="name">revealLaunchRise</div><div class="val">1.60</div><div class="note">Metres it gains, most of it in the first third.</div><div class="at">config:410</div></div>
+<div class="row" data-s="reveallaunchlean 0.25 metres it drifts toward its orbit slot during the launch."><div class="name">revealLaunchLean</div><div class="val">0.25</div><div class="note">Metres it drifts toward its orbit slot during the launch.</div><div class="at">config:411</div></div>
+<div class="row" data-s="revealspinturns 2 full rolls about the body axis across launch + soar. must be a whole number."><div class="name">revealSpinTurns</div><div class="val">2</div><div class="note">Full rolls about the body axis across launch + soar. MUST be a whole number.</div><div class="at">config:412</div></div>
+<div class="row" data-s="revealshock 4.0 the takeoff shoves every other butterfly outward by this impulse."><div class="name">revealShock</div><div class="val">4.0</div><div class="note">The takeoff shoves every other butterfly outward by this impulse.</div><div class="at">config:413</div></div>
+<div class="row" data-s="revealjoinlift 0.18 metres the soar arcs upward at its midpoint."><div class="name">revealJoinLift</div><div class="val">0.18</div><div class="note">Metres the soar arcs upward at its midpoint.</div><div class="at">config:418</div></div>
+<div class="row" data-s="revealjoinbank 0.22 radians of bank through the turn away, peaking mid-departure."><div class="name">revealJoinBank</div><div class="val">0.22</div><div class="note">Radians of bank through the turn away, peaking mid-departure.</div><div class="at">config:419</div></div>
+<div class="row" data-s="revealjoinarc 1.05 radians forward of the visitor's gaze to bias the orbit entry point."><div class="name">revealJoinArc</div><div class="val">1.05</div><div class="note">Radians forward of the visitor's gaze to bias the orbit entry point.</div><div class="at">config:420</div></div>
+<div class="row" data-s="revealtagfade 0.8 seconds the name tag takes to fade in, once orbiting."><div class="name">revealTagFade</div><div class="val">0.8</div><div class="note">Seconds the name tag takes to fade in, once orbiting.</div><div class="at">config:428</div></div>
+<div class="row" data-s="revealdim 0.10 opacity the rest of the room falls to during a reveal."><div class="name">revealDim</div><div class="val">0.10</div><div class="note">Opacity the rest of the room falls to during a reveal.</div><div class="at">config:455</div></div>
+<div class="row" data-s="revealslow 0.35 time-scale ceiling on the 26 keys while the hero is up."><div class="name">revealSlow</div><div class="val">0.35</div><div class="note">Time-scale ceiling on the 26 keys while the hero is up.</div><div class="at">config:456</div></div>
+<div class="row" data-s="revealdimin 1.5 seconds to recede, from 'keyboard:accepted'."><div class="name">revealDimIn</div><div class="val">1.5</div><div class="note">Seconds to recede, from 'keyboard:accepted'.</div><div class="at">config:457</div></div>
+<div class="row" data-s="revealdimout 3.5 seconds to come back, once the hero reaches its orbit."><div class="name">revealDimOut</div><div class="val">3.5</div><div class="note">Seconds to come back, once the hero reaches its orbit.</div><div class="at">config:458</div></div>
+<div class="row" data-s="revealburst 8 letters thrown outward at the launch instant."><div class="name">revealBurst</div><div class="val">8</div><div class="note">Letters thrown outward at the launch instant.</div><div class="at">config:467</div></div>
+<div class="row" data-s="revealtrailgap 0.055 seconds between shed letters after that."><div class="name">revealTrailGap</div><div class="val">0.055</div><div class="note">Seconds between shed letters after that.</div><div class="at">config:468</div></div>
+<div class="row" data-s="revealtrailtail 0.9 seconds into the soar that shedding stops."><div class="name">revealTrailTail</div><div class="val">0.9</div><div class="note">Seconds into the soar that shedding stops.</div><div class="at">config:469</div></div>
+<div class="row" data-s="revealtraillife 1.9 seconds a shed letter lives."><div class="name">revealTrailLife</div><div class="val">1.9</div><div class="note">Seconds a shed letter lives.</div><div class="at">config:470</div></div>
+<div class="row" data-s="revealtrailfall 0.55 metres/sec&#178; it sinks. gentle &#8212; this is ink, not gravity."><div class="name">revealTrailFall</div><div class="val">0.55</div><div class="note">Metres/sec&#178; it sinks. Gentle &#8212; this is ink, not gravity.</div><div class="at">config:471</div></div>
+<div class="row" data-s="revealtraildrag 1.4 per second the throw bleeds off."><div class="name">revealTrailDrag</div><div class="val">1.4</div><div class="note">Per second the throw bleeds off.</div><div class="at">config:472</div></div>
+<div class="row" data-s="revealtrailspin 3.4 max radians/sec a shed letter tumbles."><div class="name">revealTrailSpin</div><div class="val">3.4</div><div class="note">Max radians/sec a shed letter tumbles.</div><div class="at">config:473</div></div>
+</div>
+<h3 class="group">how big a wing is on the butterfly</h3>
+<div class="rows">
+<div class="row" data-s="wingplane 0.64 wing plane chord relative to the body plane. the knob for overall butterfly scale &#8212; not sizemin/colsizemin, which are the unit half a dozen tuned constants are quoted in. was 0.85 through v8.6."><div class="name">wingPlane</div><div class="val">0.64</div><div class="note">Wing plane chord relative to the body plane. THE knob for overall butterfly scale &#8212; not sizeMin/colSizeMin, which are the unit half a dozen tuned constants are quoted in. Was 0.85 through v8.6.</div><div class="at">config:506</div></div>
+</div>
+<h3 class="group">the wing shape's fit in its slice</h3>
+<div class="rows">
+<div class="row" data-s="wingfitfill 0.80 0&#8211;1 of the per-wing headroom to take. the knob that lifts the small wings: headroom runs 1.09&#215; on a wing that already fills the slice up to 2.20&#215; on one that does not."><div class="name">wingFitFill</div><div class="val">0.80</div><div class="note">0&#8211;1 of the per-wing headroom to take. The knob that lifts the SMALL wings: headroom runs 1.09&#215; on a wing that already fills the slice up to 2.20&#215; on one that does not.</div><div class="at">config:513</div></div>
+<div class="row" data-s="wingfitseam 1.00 0&#8211;1, how far to slide the fore/hind seam onto the middle of the wing. where most of the headroom comes from."><div class="name">wingFitSeam</div><div class="val">1.00</div><div class="note">0&#8211;1, how far to slide the fore/hind seam onto the middle of the wing. Where most of the headroom comes from.</div><div class="at">config:514</div></div>
+<div class="row" data-s="wingfitgain 1.05 flat multiplier on top of the fill. still hard-clamped by the headroom, so it can never push a wing off the slice."><div class="name">wingFitGain</div><div class="val">1.05</div><div class="note">Flat multiplier on top of the fill. Still hard-clamped by the headroom, so it can never push a wing off the slice.</div><div class="at">config:515</div></div>
+<div class="row" data-s="wingfitmargin 2.0 pixels of slice left clear on every side. mip headroom, not a safety margin."><div class="name">wingFitMargin</div><div class="val">2.0</div><div class="note">Pixels of slice left clear on every side. Mip headroom, not a safety margin.</div><div class="at">config:516</div></div>
+</div>
+<h3 class="group">the wing base colour</h3>
+<div class="rows">
+<div class="row" data-s="wingcolrandamt 0.29 scales the jitter draws &#8212; shape placement wobble, linework spread. 0 = pure formula."><div class="name">wingColRandAmt</div><div class="val">0.29</div><div class="note">Scales the jitter draws &#8212; shape placement wobble, linework spread. 0 = pure formula.</div><div class="at">config:518</div></div>
+<div class="row" data-s="wingcolstyle 'random' pattern kind: random | stripes | checker | dots | rings | sunburst."><div class="name">wingColStyle</div><div class="val">'random'</div><div class="note">Pattern kind: random | stripes | checker | dots | rings | sunburst.</div><div class="at">config:519</div></div>
+<div class="row" data-s="wingcolhues 6 how many palette entries a name draws into its working set."><div class="name">wingColHues</div><div class="val">6</div><div class="note">How many palette entries a name draws into its working set.</div><div class="at">config:520</div></div>
+<div class="row" data-s="wingcolshapes 0 big overlay shapes. 0 = per-name (1&#8211;3); 1&#8211;5 forces it."><div class="name">wingColShapes</div><div class="val">0</div><div class="note">Big overlay shapes. 0 = per-name (1&#8211;3); 1&#8211;5 forces it.</div><div class="at">config:521</div></div>
+<div class="row" data-s="wingcolblend 'random' force the blend mode: random | normal | difference | multiply | screen | exclusion."><div class="name">wingColBlend</div><div class="val">'random'</div><div class="note">Force the blend mode: random | normal | difference | multiply | screen | exclusion.</div><div class="at">config:522</div></div>
+<div class="row" data-s="wingcolpatternscale 1.0 multiplier on pattern frequency. &gt;1 = finer."><div class="name">wingColPatternScale</div><div class="val">1.0</div><div class="note">Multiplier on pattern frequency. >1 = finer.</div><div class="at">config:523</div></div>
+<div class="row" data-s="wingcolaa 0 antialias half-width in pixels. 0 = fully hard edges, as the reference graphics."><div class="name">wingColAA</div><div class="val">0</div><div class="note">Antialias half-width in PIXELS. 0 = fully hard edges, as the reference graphics.</div><div class="at">config:524</div></div>
+</div>
+<h3 class="group">the name tag under a collected butterfly</h3>
+<div class="rows">
+<div class="row" data-s="tagshow true whether the name renders at all."><div class="name">tagShow</div><div class="val">true</div><div class="note">Whether the name renders at all.</div><div class="at">config:536</div></div>
+<div class="row" data-s="tagangular 0.085 world height per metre of distance. never faded with distance &#8212; the name is the visitor's record."><div class="name">tagAngular</div><div class="val">0.085</div><div class="note">World height per metre of distance. Never faded with distance &#8212; the name is the visitor's record.</div><div class="at">config:537</div></div>
+<div class="row" data-s="tagmin 0.050 floor on that angular scale."><div class="name">tagMin</div><div class="val">0.050</div><div class="note">Floor on that angular scale.</div><div class="at">config:538</div></div>
+<div class="row" data-s="tagmax 0.340 ceiling on it."><div class="name">tagMax</div><div class="val">0.340</div><div class="note">Ceiling on it.</div><div class="at">config:539</div></div>
+<div class="row" data-s="tagbodydrop -0.135 per unit model size: where the painted silhouette bottom sits, and the name's top with it. set by the abdomen (body_alpha bottoms at &#8722;0.1407), not the wings."><div class="name">tagBodyDrop</div><div class="val">-0.135</div><div class="note">Per unit model size: where the painted silhouette bottom sits, and the name's top with it. Set by the abdomen (BODY_ALPHA bottoms at &#8722;0.1407), not the wings.</div><div class="at">config:540</div></div>
+<div class="row" data-s="tagjitter 0.75 per-letter angle and rise. higher = wilder."><div class="name">tagJitter</div><div class="val">0.75</div><div class="note">Per-letter angle and rise. Higher = wilder.</div><div class="at">config:541</div></div>
+</div>
+<h3 class="group">the session &#8212; v10&#8217;s guide, and the voice that runs it</h3>
+<div class="rows">
+<div class="row is-chg" data-s="guidequietms 10000 milliseconds of no interaction before the nudge. with guidequietgrace this is fifteen seconds from the last thing a visitor did to the room resetting &#8212; the farewell is what calls clearroom(). note this was never why a desktop session would not time out: that was mouseidlems, a parked cursor pinning the quiet clock at zero so no value here could be reached."><div class="name">guideQuietMs<span class="flag chg">v11</span></div><div class="val">10000</div><div class="note">Milliseconds of no interaction before the nudge. With guideQuietGrace this is FIFTEEN SECONDS from the last thing a visitor did to the room resetting &#8212; the farewell is what calls clearRoom(). NOTE this was never why a desktop session would not time out: that was mouseIdleMs, a parked cursor pinning the quiet clock at zero so no value here could be reached.</div><div class="at">config:1038</div></div>
+<div class="row is-chg" data-s="guidequietgrace 5000 ...and this much more before the farewell, which is what actually clears the room. any activity cancels and puts the session back."><div class="name">guideQuietGrace<span class="flag chg">v11</span></div><div class="val">5000</div><div class="note">...and this much more before the farewell, which is what actually clears the room. ANY activity cancels and puts the session back.</div><div class="at">config:1039</div></div>
+<div class="row" data-s="guidemaxms 480000 hard cap on one session. an exhibition backstop &#8212; it is what ends a session the quiet clock can never end, because something is permanently freezing it."><div class="name">guideMaxMs</div><div class="val">480000</div><div class="note">Hard cap on one session. An exhibition backstop &#8212; it is what ends a session the quiet clock can never end, because something is permanently freezing it.</div><div class="at">config:886</div></div>
+<div class="row" data-s="guidedoffms 2000 milliseconds of xr visibility &#8216;hidden&#8217; that count as the headset coming off. ends the session silently &#8212; there is nobody in there to hear a farewell."><div class="name">guideDoffMs</div><div class="val">2000</div><div class="note">Milliseconds of XR visibility &#8216;hidden&#8217; that count as the headset coming off. Ends the session silently &#8212; there is nobody in there to hear a farewell.</div><div class="at">config:887</div></div>
+<div class="row" data-s="guideunlockat 0 seconds into the welcome track before the room comes live. 0 = at once, so a visitor who already knows what to do is never blocked. move it onto the second where the instruction lands once the track is cut."><div class="name">guideUnlockAt</div><div class="val">0</div><div class="note">Seconds into the welcome track before the room comes live. 0 = at once, so a visitor who already knows what to do is never blocked. Move it onto the second where the instruction lands once the track is cut.</div><div class="at">config:893</div></div>
+<div class="row" data-s="guidewelcomemax 60 seconds. a stalled welcome track can never hold the room locked longer than this."><div class="name">guideWelcomeMax</div><div class="val">60</div><div class="note">Seconds. A stalled welcome track can never hold the room locked longer than this.</div><div class="at">config:894</div></div>
+<div class="row" data-s="guidefarewellmin 1.2 seconds the farewell beat lasts even with no track behind it &#8212; long enough for the flower to fade back in."><div class="name">guideFarewellMin</div><div class="val">1.2</div><div class="note">Seconds the farewell beat lasts even with no track behind it &#8212; long enough for the flower to fade back in.</div><div class="at">config:895</div></div>
+<div class="row" data-s="guidefarewellmax 20 ...and it can never last longer than this."><div class="name">guideFarewellMax</div><div class="val">20</div><div class="note">...and it can never last longer than this.</div><div class="at">config:896</div></div>
+<div class="row" data-s="guidetalkmax 90 the longest a cue may freeze the quiet clock. a track that stalls mid-fetch never fires &#8216;ended&#8217; and never reports itself paused; without this, one bad file holds a session open until guidemaxms."><div class="name">guideTalkMax</div><div class="val">90</div><div class="note">The longest a cue may freeze the quiet clock. A track that stalls mid-fetch never fires &#8216;ended&#8217; and never reports itself paused; without this, one bad file holds a session open until guideMaxMs.</div><div class="at">config:902</div></div>
+<div class="row" data-s="guidectlfade 0.50 seconds: accept and delete fading out between sessions. linear travel read through a smoothstep, exactly as reveal.js does its envelope &#8212; so it lands on 0 and 1."><div class="name">guideCtlFade</div><div class="val">0.50</div><div class="note">Seconds: accept and delete fading out between sessions. Linear travel read through a smoothstep, exactly as reveal.js does its envelope &#8212; so it lands on 0 and 1.</div><div class="at">config:904</div></div>
+<div class="row" data-s="guideflowerfade 0.70 seconds: the start flower fading in and out."><div class="name">guideFlowerFade</div><div class="val">0.70</div><div class="note">Seconds: the start flower fading in and out.</div><div class="at">config:905</div></div>
+<div class="row" data-s="guideblobx 0.00 the start flower, on the panel &#8212; cfg.panelpos(x, y). centred."><div class="name">guideBlobX</div><div class="val">0.00</div><div class="note">The start flower, on the panel &#8212; CFG.panelPos(x, y). Centred.</div><div class="at">config:911</div></div>
+<div class="row" data-s="guidebloby -0.30 between the name field (&#8722;0.235) and the two controls (&#8722;0.435)."><div class="name">guideBlobY</div><div class="val">-0.30</div><div class="note">Between the name field (&#8722;0.235) and the two controls (&#8722;0.435).</div><div class="at">config:912</div></div>
+<div class="row" data-s="guideblobk 1.60 multiplies blobw/blobh. accept is 1.26 and delete 1.02, so the start flower reads as clearly the bigger thing &#8212; and in idle it is the only pickable thing in the room."><div class="name">guideBlobK</div><div class="val">1.60</div><div class="note">Multiplies blobW/blobH. Accept is 1.26 and delete 1.02, so the start flower reads as clearly the bigger thing &#8212; and in idle it is the only pickable thing in the room.</div><div class="at">config:913</div></div>
+<div class="row" data-s="guideblobseed 1.80 the lobe phase. deliberately neither control&#8217;s (0.9 / 2.7), so the three never look like the same flower."><div class="name">guideBlobSeed</div><div class="val">1.80</div><div class="note">The lobe phase. Deliberately neither control&#8217;s (0.9 / 2.7), so the three never look like the same flower.</div><div class="at">config:914</div></div>
+<div class="row" data-s="guideblobhue 212 neither accept&#8217;s 142 nor delete&#8217;s 356. saturation is 100, like every control."><div class="name">guideBlobHue</div><div class="val">212</div><div class="note">Neither accept&#8217;s 142 nor delete&#8217;s 356. Saturation is 100, like every control.</div><div class="at">config:915</div></div>
+<div class="row" data-s="guidebloblit 44 per cent, at rest."><div class="name">guideBlobLit</div><div class="val">44</div><div class="note">Per cent, at rest.</div><div class="at">config:916</div></div>
+<div class="row" data-s="guidebloblithot 34 ...and pointed at. the same narrow lightness band the two controls carry state in."><div class="name">guideBlobLitHot</div><div class="val">34</div><div class="note">...and pointed at. The same narrow lightness band the two controls carry state in.</div><div class="at">config:917</div></div>
+<div class="row" data-s="guideblobtilt -0.18 its tilt in the plane."><div class="name">guideBlobTilt</div><div class="val">-0.18</div><div class="note">Its tilt in the plane.</div><div class="at">config:918</div></div>
+<div class="row" data-s="guideblobcant 0.10 ...and its cant out of it."><div class="name">guideBlobCant</div><div class="val">0.10</div><div class="note">...and its cant out of it.</div><div class="at">config:919</div></div>
+<div class="row" data-s="vocues { welcome, spell, pinch, recall } cue name &#8594; file, relative to index.html. a cue with no entry is a silent no-op that still reports itself finished, so the guide runs with whatever subset of the tracks exists &#8212; nudge and farewell are not recorded. see audio/readme.md."><div class="name">voCues</div><div class="val">{ welcome, spell, pinch, recall }</div><div class="note">Cue name &#8594; file, relative to index.html. A cue with no entry is a SILENT NO-OP that still reports itself finished, so the guide runs with whatever subset of the tracks exists &#8212; nudge and farewell are not recorded. See audio/README.md.</div><div class="at">config:1063</div></div>
+<div class="row" data-s="vointro [welcome, spell, pinch] the opening, in order &#8212; three recordings played back to back as one cue. playing() stays true across the gaps, so the silence between two of them is never mistaken for the narration having finished."><div class="name">voIntro</div><div class="val">[welcome, spell, pinch]</div><div class="note">The opening, in order &#8212; three recordings played back to back as ONE cue. playing() stays true across the gaps, so the silence between two of them is never mistaken for the narration having finished.</div><div class="at">config:1090</div></div>
+<div class="row" data-s="vogap 0.45 seconds of silence between two cues in a sequence."><div class="name">voGap</div><div class="val">0.45</div><div class="note">Seconds of silence between two cues in a sequence.</div><div class="at">config:1091</div></div>
+<div class="row" data-s="vointrodelay 0.90 seconds between the start flower being pressed and the first spoken word. v10.4: the press has its own sound now, and the two arriving on the same frame meant neither read. the welcome state holds across this pause &#8212; it cannot fall through to live in the silence."><div class="name">voIntroDelay</div><div class="val">0.90</div><div class="note">Seconds between the start flower being pressed and the first spoken word. v10.4: the press has its own sound now, and the two arriving on the same frame meant neither read. The welcome state HOLDS across this pause &#8212; it cannot fall through to live in the silence.</div><div class="at">config:1101</div></div>
+</div>
+<h3 class="group">the room&#8217;s sound &#8212; js/sfx.js (v10.4)</h3>
+<div class="rows">
+<div class="row" data-s="sfx { music, wing1, wing2, select } name &#8594; file, relative to index.html, exactly as vocues is. the four are in audio/sfx/; the masters are sounds/sfx/. everything here is a level write on a tick &#8212; there is no audiocontext anywhere in the build."><div class="name">sfx</div><div class="val">{ music, wing1, wing2, select }</div><div class="note">Name &#8594; file, relative to index.html, exactly as voCues is. The four are in audio/sfx/; the masters are sounds/sfx/. Everything here is a level write on a tick &#8212; there is no AudioContext anywhere in the build.</div><div class="at">config:1107</div></div>
+<div class="row" data-s="sfxwings [wing1, wing2] which entries above are wingbeats. add a third by dropping the file in, naming it in sfx, and listing it here."><div class="name">sfxWings</div><div class="val">[wing1, wing2]</div><div class="note">Which entries above are wingbeats. Add a third by dropping the file in, naming it in sfx, and listing it here.</div><div class="at">config:1115</div></div>
+<div class="row" data-s="sfxmusicgain 0.50 the knob for how loud the room is. measured off the masters: the bed is &#8722;28.5 db rms and the wingbeats &#8722;42.8 / &#8722;46.8, i.e. 15&#8211;18 db under it &#8212; so the wings run at full and the bed is the one pulled down. raise or lower this, not sfxwinggain."><div class="name">sfxMusicGain</div><div class="val">0.50</div><div class="note">THE knob for how loud the room is. Measured off the masters: the bed is &#8722;28.5 dB RMS and the wingbeats &#8722;42.8 / &#8722;46.8, i.e. 15&#8211;18 dB under it &#8212; so the wings run at full and the BED is the one pulled down. Raise or lower this, not sfxWingGain.</div><div class="at">config:1121</div></div>
+<div class="row" data-s="sfxmusicfadein 3.00 seconds, up from silence at the head of the track. currenttime resets when the element loops, so this is both the opening fade-in and half of every loop seam &#8212; there is no crossfade and no second element."><div class="name">sfxMusicFadeIn</div><div class="val">3.00</div><div class="note">Seconds, up from silence at the head of the track. currentTime resets when the element loops, so this is BOTH the opening fade-in and half of every loop seam &#8212; there is no crossfade and no second element.</div><div class="at">config:1126</div></div>
+<div class="row" data-s="sfxmusicfadeout 2.50 seconds, down to silence off the end. the master starts at 0.116 rms and ends at 0.003, so a bare loop bangs once every 2:21; this is what stops it, and it hides the aac padding at the join for free."><div class="name">sfxMusicFadeOut</div><div class="val">2.50</div><div class="note">Seconds, down to silence off the end. The master starts at 0.116 RMS and ends at 0.003, so a bare loop bangs once every 2:21; this is what stops it, and it hides the AAC padding at the join for free.</div><div class="at">config:1127</div></div>
+<div class="row" data-s="sfxwinggain 1.00 full, and it should stay there &#8212; see sfxmusicgain."><div class="name">sfxWingGain</div><div class="val">1.00</div><div class="note">Full, and it should stay there &#8212; see sfxMusicGain.</div><div class="at">config:1129</div></div>
+<div class="row" data-s="sfxwingfade 0.60 seconds, up at the head and down at the tail of each wingbeat. same envelope helper as the bed."><div class="name">sfxWingFade</div><div class="val">0.60</div><div class="note">Seconds, up at the head and down at the tail of each wingbeat. Same envelope helper as the bed.</div><div class="at">config:1130</div></div>
+<div class="row" data-s="sfxwinggapmin 4.00 seconds of quiet between two wingbeats&#8230;"><div class="name">sfxWingGapMin</div><div class="val">4.00</div><div class="note">Seconds of quiet between two wingbeats&#8230;</div><div class="at">config:1131</div></div>
+<div class="row" data-s="sfxwinggapmax 14.00 &#8230;picked uniformly in this band. they are atmosphere: nothing triggers them and nothing waits on them."><div class="name">sfxWingGapMax</div><div class="val">14.00</div><div class="note">&#8230;picked uniformly in this band. They are atmosphere: nothing triggers them and nothing waits on them.</div><div class="at">config:1132</div></div>
+<div class="row" data-s="sfxwingfirstgap 2.00 &#8230;and before the first one."><div class="name">sfxWingFirstGap</div><div class="val">2.00</div><div class="note">&#8230;and before the first one.</div><div class="at">config:1133</div></div>
+<div class="row" data-s="sfxselectgain 0.90 the click, on everything selected &#8212; the flower, accept, delete, a letter, a collected butterfly."><div class="name">sfxSelectGain</div><div class="val">0.90</div><div class="note">The click, on everything selected &#8212; the flower, accept, delete, a letter, a collected butterfly.</div><div class="at">config:1135</div></div>
+<div class="row" data-s="sfxselectvoices 4 elements in the click pool. the recording runs 1.85 s and a visitor spelling a name presses faster than that; retriggering one element would cut every second press dead."><div class="name">sfxSelectVoices</div><div class="val">4</div><div class="note">Elements in the click POOL. The recording runs 1.85 s and a visitor spelling a name presses faster than that; retriggering ONE element would cut every second press dead.</div><div class="at">config:1139</div></div>
+<div class="row" data-s="sfxduck 0.35 what the bed and the wingbeats drop to while the narration speaks. the piece talking always wins. this is the seam voice.duck() was left open for in v10, used from the other side."><div class="name">sfxDuck</div><div class="val">0.35</div><div class="note">What the bed and the wingbeats drop to while the narration speaks. The piece talking always wins. This is the seam Voice.duck() was left open for in v10, used from the other side.</div><div class="at">config:1143</div></div>
+<div class="row" data-s="sfxduckfade 0.50 seconds, eased both ways &#8212; so the return is not a step on the frame a cue ends."><div class="name">sfxDuckFade</div><div class="val">0.50</div><div class="note">Seconds, eased both ways &#8212; so the return is not a step on the frame a cue ends.</div><div class="at">config:1144</div></div>
+</div>
+<h3 class="group">palette</h3>
+<div class="rows">
+<div class="row" data-s="bflysat 100 per cent. butterflies are fully saturated, always &#8212; the scene is white."><div class="name">bflySat</div><div class="val">100</div><div class="note">Per cent. Butterflies are fully saturated, always &#8212; the scene is white.</div><div class="at">config:547</div></div>
+<div class="row" data-s="bflylit 47 lightness of a butterfly's own colour."><div class="name">bflyLit</div><div class="val">47</div><div class="note">Lightness of a butterfly's own colour.</div><div class="at">config:548</div></div>
+<div class="row" data-s="letterlit 36 a letter is darker than its butterfly: type, not silhouette."><div class="name">letterLit</div><div class="val">36</div><div class="note">A letter is darker than its butterfly: type, not silhouette.</div><div class="at">config:552</div></div>
+<div class="row" data-s="cutlit 46 the letter cut out of the wing."><div class="name">cutLit</div><div class="val">46</div><div class="note">The letter cut out of the wing.</div><div class="at">config:554</div></div>
+<div class="row" data-s="ghostlit 52 the echo behind a letter."><div class="name">ghostLit</div><div class="val">52</div><div class="note">The echo behind a letter.</div><div class="at">config:556</div></div>
+</div>
+</section>
+<section class="file" data-file="wing-gen.js" style="--h:hsl(150 58% 46%)">
+<div class="filehead"><h2>js/wing-gen.js</h2><span class="n">13</span></div>
+<p class="fileblurb">The generator &#8212; a parity-locked port of the TouchDesigner Python &#8212; plus v8.7&#8217;s fit stage. The first three are structural: changing them breaks parity.</p>
+<h3 class="group">structure &#8212; do not move without re-running the parity harness</h3>
+<div class="rows">
+<div class="row" data-s="ss 1 supersampling. not the python's 2 &#8212; measured. canvas2d already computes analytic coverage, so supersampling erodes the shape (ss1 &#8722;0.073%, ss2 &#8722;0.855%, ss4 &#8722;0.988%)."><div class="name">SS</div><div class="val">1</div><div class="note">Supersampling. NOT the Python's 2 &#8212; measured. Canvas2D already computes analytic coverage, so supersampling erodes the shape (ss1 &#8722;0.073%, ss2 &#8722;0.855%, ss4 &#8722;0.988%).</div><div class="at">wing-gen:117</div></div>
+<div class="row" data-s="seed 0 the seed the baked roll table covers. anything else falls through to wingprng and is explicitly off-parity."><div class="name">SEED</div><div class="val">0</div><div class="note">The seed the baked roll table covers. Anything else falls through to WingPRNG and is explicitly off-parity.</div><div class="at">wing-gen:118</div></div>
+<div class="row" data-s="slice_w 128 texture width &#8212; outward from the body."><div class="name">SLICE_W</div><div class="val">128</div><div class="note">Texture width &#8212; outward from the body.</div><div class="at">wing-gen:125</div></div>
+<div class="row" data-s="slice_h 256 texture height &#8212; along the body, fore at the top. 1:2 because the wing reaches twice as far along the body as outward."><div class="name">SLICE_H</div><div class="val">256</div><div class="note">Texture height &#8212; along the body, fore at the top. 1:2 because the wing reaches twice as far along the body as outward.</div><div class="at">wing-gen:126</div></div>
+<div class="row" data-s="parity_aspect 1.0 pinned. expand() is always called with aspect 1.0, which keeps parity true by construction rather than by measurement."><div class="name">PARITY_ASPECT</div><div class="val">1.0</div><div class="note">Pinned. expand() is always called with aspect 1.0, which keeps parity true by construction rather than by measurement.</div><div class="at">wing-gen:127</div></div>
+</div>
+<h3 class="group">DEFAULTS &#8212; overridable per call via opts</h3>
+<div class="rows">
+<div class="row" data-s="anchorv 0.5 seam position. 0.5 = fore and hind split mid-slice."><div class="name">anchorV</div><div class="val">0.5</div><div class="note">Seam position. 0.5 = fore and hind split mid-slice.</div><div class="at">wing-gen:130</div></div>
+<div class="row" data-s="fitscale 0.9 fixed wing scale, the same in every variation."><div class="name">fitScale</div><div class="val">0.9</div><div class="note">Fixed wing scale, the same in every variation.</div><div class="at">wing-gen:131</div></div>
+<div class="row" data-s="bodywid 0.055 root inset. never randomised."><div class="name">bodyWid</div><div class="val">0.055</div><div class="note">Root inset. Never randomised.</div><div class="at">wing-gen:132</div></div>
+<div class="row" data-s="winggap 0.02 gap between fore and hind at the root. never randomised."><div class="name">wingGap</div><div class="val">0.02</div><div class="note">Gap between fore and hind at the root. Never randomised.</div><div class="at">wing-gen:133</div></div>
+<div class="row" data-s="fitfill 0.80 fallback for cfg.wingfitfill."><div class="name">fitFill</div><div class="val">0.80</div><div class="note">Fallback for CFG.wingFitFill.</div><div class="at">wing-gen:135</div></div>
+<div class="row" data-s="fitseam 1.00 fallback for cfg.wingfitseam."><div class="name">fitSeam</div><div class="val">1.00</div><div class="note">Fallback for CFG.wingFitSeam.</div><div class="at">wing-gen:136</div></div>
+<div class="row" data-s="fitgain 1.05 fallback for cfg.wingfitgain."><div class="name">fitGain</div><div class="val">1.05</div><div class="note">Fallback for CFG.wingFitGain.</div><div class="at">wing-gen:137</div></div>
+<div class="row" data-s="fitmargin 2.0 fallback for cfg.wingfitmargin."><div class="name">fitMargin</div><div class="val">2.0</div><div class="note">Fallback for CFG.wingFitMargin.</div><div class="at">wing-gen:138</div></div>
+</div>
+</section>
+<section class="file" data-file="bfly-model.js" style="--h:hsl(28 58% 46%)">
+<div class="filehead"><h2>js/bfly-model.js</h2><span class="n">2</span></div>
+<p class="fileblurb">The mesh: one body plane and two wing planes on pivots. Size is not baked in &#8212; it lives on model.scale.</p>
+<h3 class="group">build geometry</h3>
+<div class="rows">
+<div class="row" data-s="base 0.28 fixed build scale. the per-butterfly size multiplies this on the group."><div class="name">BASE</div><div class="val">0.28</div><div class="note">Fixed build scale. The per-butterfly size multiplies this on the group.</div><div class="at">bfly-model:22</div></div>
+<div class="row" data-s="wingplane() 0.64 reads cfg.wingplane, falls back to 0.64. cut from 0.85 in v8.7 to pay for the fit stage."><div class="name">wingPlane()</div><div class="val">0.64</div><div class="note">Reads CFG.wingPlane, falls back to 0.64. Cut from 0.85 in v8.7 to pay for the fit stage.</div><div class="at">bfly-model:61</div></div>
+</div>
+</section>
+<section class="file" data-file="wing-tex.js" style="--h:hsl(268 58% 46%)">
+<div class="filehead"><h2>js/wing-tex.js</h2><span class="n">1</span></div>
+<p class="fileblurb">The seam between the generator and the scene: one CanvasTexture per unique wing, and who gets one.</p>
+<h3 class="group">the cache</h3>
+<div class="rows">
+<div class="row" data-s="max_unique 64 distinct wing textures held at once, ~128 kb each. the 26 keys hold 26 of these for good, which is why cfg.maxcollected has a ~36 ceiling."><div class="name">MAX_UNIQUE</div><div class="val">64</div><div class="note">Distinct wing textures held at once, ~128 KB each. The 26 keys hold 26 of these for good, which is why CFG.maxCollected has a ~36 ceiling.</div><div class="at">wing-tex:28</div></div>
+</div>
+</section>
+<section class="file" data-file="wing-colour.js" style="--h:hsl(330 58% 46%)">
+<div class="filehead"><h2>js/wing-colour.js</h2><span class="n">7</span></div>
+<p class="fileblurb">A name &#8594; a flat graphic composition. Deterministic from the name, but not parity-locked. Most of its behaviour is on the CFG.wingCol* keys above; these are the structural constants.</p>
+<h3 class="group">structure</h3>
+<div class="rows">
+<div class="row" data-s="wx0 / wx1 0.01 / 0.85 where the wing actually is, across the slice. composition is aimed here, not at the frame. widened in v8.7 &#8212; the fit stage moved the painted box from x 0.00&#8211;0.59 to 0.00&#8211;0.85."><div class="name">WX0 / WX1</div><div class="val">0.01 / 0.85</div><div class="note">Where the wing actually is, across the slice. Composition is aimed here, not at the frame. Widened in v8.7 &#8212; the fit stage moved the painted box from x 0.00&#8211;0.59 to 0.00&#8211;0.85.</div><div class="at">wing-colour:90</div></div>
+<div class="row" data-s="wy0 / wy1 0.10 / 1.90 the same, along the body. was 0.15 / 1.72; the painted box moved from y 0.46&#8211;1.77 to 0.07&#8211;1.93."><div class="name">WY0 / WY1</div><div class="val">0.10 / 1.90</div><div class="note">The same, along the body. Was 0.15 / 1.72; the painted box moved from y 0.46&#8211;1.77 to 0.07&#8211;1.93.</div><div class="at">wing-colour:90</div></div>
+<div class="row" data-s="mins [10, 12, 12, 10, 10] pixel floors per pattern kind, so nothing renders finer than it can be read at wing scale."><div class="name">MINS</div><div class="val">[10, 12, 12, 10, 10]</div><div class="note">Pixel floors per pattern kind, so nothing renders finer than it can be read at wing scale.</div><div class="at">wing-colour:96</div></div>
+<div class="row" data-s="styles stripes &#183; checker &#183; dots &#183; rings &#183; sunburst the five pattern kinds. wingcolstyle picks one or leaves it per-name."><div class="name">STYLES</div><div class="val">stripes &#183; checker &#183; dots &#183; rings &#183; sunburst</div><div class="note">The five pattern kinds. wingColStyle picks one or leaves it per-name.</div><div class="at">wing-colour:103</div></div>
+<div class="row" data-s="blends normal &#183; difference &#183; multiply &#183; screen &#183; exclusion the five blend modes a shape can composite through."><div class="name">BLENDS</div><div class="val">normal &#183; difference &#183; multiply &#183; screen &#183; exclusion</div><div class="note">The five blend modes a shape can composite through.</div><div class="at">wing-colour:104</div></div>
+<div class="row" data-s="pal_hex 32 entries the fixed colour table sampled from the reference graphics. edit here to change the palette."><div class="name">PAL_HEX</div><div class="val">32 entries</div><div class="note">The fixed colour table sampled from the reference graphics. Edit here to change the palette.</div><div class="at">wing-colour:111</div></div>
+<div class="row" data-s="n_bold / n_earth 18 / 8 how the table splits: 18 bold, 8 earth, the remaining 6 neutral."><div class="name">N_BOLD / N_EARTH</div><div class="val">18 / 8</div><div class="note">How the table splits: 18 bold, 8 earth, the remaining 6 neutral.</div><div class="at">wing-colour:125</div></div>
+</div>
+</section>
+<section class="file" data-file="style.js" style="--h:hsl(188 58% 46%)">
+<div class="filehead"><h2>js/style.js</h2><span class="n">13</span></div>
+<p class="fileblurb">The typographic decisions, made once per letter and then fixed. Every constant here is a RANGE the per-letter hash draws from &#8212; move the range, not a value.</p>
+<h3 class="group">the letter sprite</h3>
+<div class="rows">
+<div class="row" data-s="angles [0, 0, 0.12, &#8722;0.14, &#8230;] the set of angles a letter can be thrown to."><div class="name">ANGLES</div><div class="val">[0, 0, 0.12, &#8722;0.14, &#8230;]</div><div class="note">The set of angles a letter can be thrown to.</div><div class="at">style:37</div></div>
+<div class="row" data-s="scale 0.72 + c &#183; 0.55 deliberately a narrow band."><div class="name">scale</div><div class="val">0.72 + c &#183; 0.55</div><div class="note">Deliberately a narrow band.</div><div class="at">style:52</div></div>
+<div class="row" data-s="dist 0.55 + d &#183; 0.95 multiples of the letter's own size."><div class="name">dist</div><div class="val">0.55 + d &#183; 0.95</div><div class="note">Multiples of the letter's own size.</div><div class="at">style:54</div></div>
+<div class="row" data-s="mirror e &lt; 0.14 14% of letters are mirrored."><div class="name">mirror</div><div class="val">e &lt; 0.14</div><div class="note">14% of letters are mirrored.</div><div class="at">style:55</div></div>
+<div class="row" data-s="hollow f &lt; 0.28 28% are outlined rather than filled."><div class="name">hollow</div><div class="val">f &lt; 0.28</div><div class="note">28% are outlined rather than filled.</div><div class="at">style:56</div></div>
+<div class="row" data-s="leader g &lt; 0.45 45% get a hairline back to the body."><div class="name">leader</div><div class="val">g &lt; 0.45</div><div class="note">45% get a hairline back to the body.</div><div class="at">style:57</div></div>
+</div>
+<h3 class="group">the letter cut into the wing</h3>
+<div class="rows">
+<div class="row" data-s="wingrot (r &#8722; 0.5) &#183; 2.0 radians, in the wing's plane."><div class="name">wingRot</div><div class="val">(r &#8722; 0.5) &#183; 2.0</div><div class="note">Radians, in the wing's plane.</div><div class="at">style:84</div></div>
+<div class="row" data-s="wingsx 0.70 + r &#183; 0.55 uneven squash &#8212; what a tilt out of plane reads as."><div class="name">wingSX</div><div class="val">0.70 + r &#183; 0.55</div><div class="note">Uneven squash &#8212; what a tilt out of plane reads as.</div><div class="at">style:85</div></div>
+<div class="row" data-s="wingsy 0.55 + r &#183; 0.62 the other axis of that squash."><div class="name">wingSY</div><div class="val">0.55 + r &#183; 0.62</div><div class="note">The other axis of that squash.</div><div class="at">style:86</div></div>
+<div class="row" data-s="wingshear (r &#8722; 0.5) &#183; 0.75 shear, which is the rest of the tilt."><div class="name">wingShear</div><div class="val">(r &#8722; 0.5) &#183; 0.75</div><div class="note">Shear, which is the rest of the tilt.</div><div class="at">style:87</div></div>
+<div class="row" data-s="wingsize 0.62 + r &#183; 0.34 multiples of the slice width."><div class="name">wingSize</div><div class="val">0.62 + r &#183; 0.34</div><div class="note">Multiples of the slice width.</div><div class="at">style:88</div></div>
+<div class="row" data-s="wingoffx (r &#8722; 0.5) &#183; 0.22 placement wobble across the slice."><div class="name">wingOffX</div><div class="val">(r &#8722; 0.5) &#183; 0.22</div><div class="note">Placement wobble across the slice.</div><div class="at">style:89</div></div>
+<div class="row" data-s="wingoffy (r &#8722; 0.5) &#183; 0.26 placement wobble along it."><div class="name">wingOffY</div><div class="val">(r &#8722; 0.5) &#183; 0.26</div><div class="note">Placement wobble along it.</div><div class="at">style:90</div></div>
+</div>
+</section>
+<section class="file" data-file="reveal.js" style="--h:hsl(45 58% 46%)">
+<div class="filehead"><h2>js/reveal.js</h2><span class="n">2</span></div>
+<p class="fileblurb">The room&#8217;s dim/slow envelope and the wake of shed letters. Its timings are all CFG.reveal* above; these two are the pool sizes.</p>
+<h3 class="group">pools</h3>
+<div class="rows">
+<div class="row" data-s="max_trail 28 the whole shed-letter pool, allocated once and reused forever."><div class="name">MAX_TRAIL</div><div class="val">28</div><div class="note">The whole shed-letter pool, allocated once and reused forever.</div><div class="at">reveal:54</div></div>
+<div class="row" data-s="hue_steps 24 hue buckets for the wake-letter texture cache."><div class="name">HUE_STEPS</div><div class="val">24</div><div class="note">Hue buckets for the wake-letter texture cache.</div><div class="at">reveal:55</div></div>
+</div>
+</section>
+<section class="file" data-file="ui.js" style="--h:hsl(300 58% 46%)">
+<div class="filehead"><h2>js/ui.js</h2><span class="n">2</span></div>
+<p class="fileblurb">Letter sprites, the cut-out wing glyph, the flower clusters, and the name tag.</p>
+<h3 class="group">drawing</h3>
+<div class="rows">
+<div class="row" data-s="font helvetica neue, helvetica, arial&#8230; the one typeface the whole piece is set in."><div class="name">FONT</div><div class="val">"Helvetica Neue", Helvetica, Arial&#8230;</div><div class="note">The one typeface the whole piece is set in.</div><div class="at">ui:32</div></div>
+<div class="row" data-s="lobe_rim 40 segments around a flower control's lobe."><div class="name">LOBE_RIM</div><div class="val">40</div><div class="note">Segments around a flower control's lobe.</div><div class="at">ui:510</div></div>
+</div>
+</section>
+<section class="file" data-file="guide.js" style="--h:hsl(95 58% 46%)">
+<div class="filehead"><h2>js/guide.js</h2><span class="n">2</span></div>
+<p class="fileblurb">The session: idle &#8594; welcome &#8594; live &#8594; wrapup &#8594; farewell &#8594; idle. Every number it runs on is a CFG.guide* key above; these two are structural.</p>
+<h3 class="group">structure</h3>
+<div class="rows">
+<div class="row" data-s="talks_over { nudge, farewell } the cues that do not freeze the quiet clock. the nudge is asking whether anyone is still there, so its own playback must not answer the question."><div class="name">TALKS_OVER</div><div class="val">{ nudge, farewell }</div><div class="note">The cues that do NOT freeze the quiet clock. The nudge is asking whether anyone is still there, so its own playback must not answer the question.</div><div class="at">guide:86</div></div>
+<div class="row" data-s="escape &#8212; the operator override: ends the session and hands over at once, from any state. wired in the component&#8217;s init."><div class="name">Escape</div><div class="val">&#8212;</div><div class="note">The operator override: ends the session and hands over at once, from any state. Wired in the component&#8217;s init.</div><div class="at">guide:390</div></div>
+</div>
+</section>
+<section class="file" data-file="voice.js" style="--h:hsl(340 58% 46%)">
+<div class="filehead"><h2>js/voice.js</h2><span class="n">2</span></div>
+<p class="fileblurb">The narration. One HTMLAudioElement per named cue, .volume for level, no AudioContext. A missing cue is a silent no-op that still finishes, so nothing ever waits on audio.</p>
+<h3 class="group">structure</h3>
+<div class="rows">
+<div class="row" data-s="have_audio typeof audio !== &#8216;undefined&#8217; no audio constructor &#8594; the whole module is a no-op. that is what lets tools/reach drive the guide headless."><div class="name">HAVE_AUDIO</div><div class="val">typeof Audio !== &#8216;undefined&#8217;</div><div class="note">No Audio constructor &#8594; the whole module is a no-op. That is what lets tools/reach drive the guide headless.</div><div class="at">voice:51</div></div>
+<div class="row" data-s="unlock() &#8212; play-then-pause on every element, spent from one real dom gesture. a hand-tracked pinch is not a gesture; the enter-ar click is, and it always happens first."><div class="name">unlock()</div><div class="val">&#8212;</div><div class="note">Play-then-pause on every element, spent from ONE real DOM gesture. A hand-tracked pinch is not a gesture; the Enter-AR click is, and it always happens first.</div><div class="at">voice:110</div></div>
+</div>
+</section>
+<section class="file" data-file="dna-store.js" style="--h:hsl(0 58% 46%)">
+<div class="filehead"><h2>js/dna-store.js</h2><span class="n">4</span></div>
+<p class="fileblurb">The collection: made, kept, brought back. Storage is behind DNA._store &#8212; replace that object to move the gallery to a server.</p>
+<h3 class="group">schema and storage</h3>
+<div class="rows">
+<div class="row" data-s="slots 4 values per sequence. dna.capture auto-commits at this count."><div class="name">SLOTS</div><div class="val">4</div><div class="note">Values per sequence. DNA.capture auto-commits at this count.</div><div class="at">dna-store:45</div></div>
+<div class="row" data-s="precision 6 decimal places stored &#8212; matches the touchdesigner schema."><div class="name">PRECISION</div><div class="val">6</div><div class="note">Decimal places stored &#8212; matches the TouchDesigner schema.</div><div class="at">dna-store:46</div></div>
+<div class="row" data-s="key 'butterflies.dna.v1' localstorage key. per-origin, so a headset and a desktop hold separate collections."><div class="name">KEY</div><div class="val">'butterflies.dna.v1'</div><div class="note">localStorage key. Per-origin, so a headset and a desktop hold separate collections.</div><div class="at">dna-store:47</div></div>
+<div class="row" data-s="collection 'dna_sequences.json' the shared file, served and written by serve.py."><div class="name">COLLECTION</div><div class="val">'dna_sequences.json'</div><div class="note">The shared file, served and written by serve.py.</div><div class="at">dna-store:58</div></div>
+</div>
+</section>
+<section class="file" data-file="keyboard.js" style="--h:hsl(105 58% 46%)">
+<div class="filehead"><h2>js/keyboard.js</h2><span class="n">11</span></div>
+<p class="fileblurb">The flight amplitudes, drawn per butterfly at spawn. CFG.wander scales the first three live, so raise that rather than editing these &#8212; they were cut twice already and the FREQUENCIES matter as much as the amplitudes.</p>
+<h3 class="group">spawn &#8212; each is a rand(min, max) range</h3>
+<div class="rows">
+<div class="row" data-s="speed &#177;rand(0.18, 0.5) orbit rate, signed. half go each way."><div class="name">speed</div><div class="val">&#177;rand(0.18, 0.5)</div><div class="note">Orbit rate, signed. Half go each way.</div><div class="at">keyboard:212</div></div>
+<div class="row" data-s="wobamp / wobfreq rand(0.035, 0.10) / rand(0.018, 0.045) lateral wobble around the orbit."><div class="name">wobAmp / wobFreq</div><div class="val">rand(0.035, 0.10) / rand(0.018, 0.045)</div><div class="note">Lateral wobble around the orbit.</div><div class="at">keyboard:217</div></div>
+<div class="row" data-s="radamp / radfreq rand(0.05, 0.16) / rand(0.015, 0.040) drift in and out of the orbit radius."><div class="name">radAmp / radFreq</div><div class="val">rand(0.05, 0.16) / rand(0.015, 0.040)</div><div class="note">Drift in and out of the orbit radius.</div><div class="at">keyboard:218</div></div>
+<div class="row" data-s="hgtamp / hgtfreq rand(0.04, 0.12) / rand(0.012, 0.032) drift up and down."><div class="name">hgtAmp / hgtFreq</div><div class="val">rand(0.04, 0.12) / rand(0.012, 0.032)</div><div class="note">Drift up and down.</div><div class="at">keyboard:219</div></div>
+<div class="row" data-s="flapspeed / flapamp rand(18, 27) / rand(0.9, 1.3) wingbeat rate and dihedral."><div class="name">flapSpeed / flapAmp</div><div class="val">rand(18, 27) / rand(0.9, 1.3)</div><div class="note">Wingbeat rate and dihedral.</div><div class="at">keyboard:220</div></div>
+</div>
+<h3 class="group">flight, in tick()</h3>
+<div class="rows">
+<div class="row" data-s="glide / burst length 0.5 + r&#183;0.9  /  1.2 + r&#183;2.2 seconds of each phase of the flap&#8211;glide cycle."><div class="name">glide / burst length</div><div class="val">0.5 + r&#183;0.9  /  1.2 + r&#183;2.2</div><div class="note">Seconds of each phase of the flap&#8211;glide cycle.</div><div class="at">keyboard:817</div></div>
+<div class="row" data-s="glideangle &#8722;1.0 + 0.08 &#183; sin(&#8230;) wings held up with a tiny tremble while gliding."><div class="name">glideAngle</div><div class="val">&#8722;1.0 + 0.08 &#183; sin(&#8230;)</div><div class="note">Wings held up with a tiny tremble while gliding.</div><div class="at">keyboard:824</div></div>
+<div class="row" data-s="body bob 0.01 &#183; size per-wingbeat bob. runs at 3&#8211;4 hz &#8212; the fastest movement on the butterfly &#8212; so it is deliberately tiny."><div class="name">body bob</div><div class="val">0.01 &#183; size</div><div class="note">Per-wingbeat bob. Runs at 3&#8211;4 Hz &#8212; the fastest movement on the butterfly &#8212; so it is deliberately tiny.</div><div class="at">keyboard:860</div></div>
+<div class="row" data-s="repulsor push min(speed, 6) &#183; 9 / (1 + 6&#183;d&#178;) how hard a moving hand scatters the swarm, within 1.4 m."><div class="name">repulsor push</div><div class="val">min(speed, 6) &#183; 9 / (1 + 6&#183;d&#178;)</div><div class="note">How hard a moving hand scatters the swarm, within 1.4 m.</div><div class="at">keyboard:845</div></div>
+<div class="row" data-s="regroup spring &#8722;1.2 &#183; dt pull back to the nominal path after a scatter."><div class="name">regroup spring</div><div class="val">&#8722;1.2 &#183; dt</div><div class="note">Pull back to the nominal path after a scatter.</div><div class="at">keyboard:849</div></div>
+<div class="row" data-s="bank clamp(diff &#183; 8, &#177;0.09) radians of roll into a turn, smoothed over 420 ms."><div class="name">bank</div><div class="val">clamp(diff &#183; 8, &#177;0.09)</div><div class="note">Radians of roll into a turn, smoothed over 420 ms.</div><div class="at">keyboard:874</div></div>
+</div>
+</section>
+<section class="file" data-file="collection.js" style="--h:hsl(240 58% 46%)">
+<div class="filehead"><h2>js/collection.js</h2><span class="n">5</span></div>
+<p class="fileblurb">The kaleidoscope that accumulates &#8212; the same flight as the keyboard, in its own wider shell. Its own spawn ranges are a touch calmer.</p>
+<h3 class="group">spawn</h3>
+<div class="rows">
+<div class="row" data-s="speed &#177;rand(0.10, 0.32) a touch slower than the keyboard's cruise &#8212; this is ambient."><div class="name">speed</div><div class="val">&#177;rand(0.10, 0.32)</div><div class="note">A touch slower than the keyboard's cruise &#8212; this is ambient.</div><div class="at">collection:239</div></div>
+<div class="row" data-s="wobamp / wobfreq rand(0.035, 0.10) / rand(0.018, 0.045) same as the keyboard's."><div class="name">wobAmp / wobFreq</div><div class="val">rand(0.035, 0.10) / rand(0.018, 0.045)</div><div class="note">Same as the keyboard's.</div><div class="at">collection:241</div></div>
+<div class="row" data-s="radamp / radfreq rand(0.06, 0.20) / rand(0.012, 0.036) wider radial drift than the keyboard's &#8212; the shell is bigger."><div class="name">radAmp / radFreq</div><div class="val">rand(0.06, 0.20) / rand(0.012, 0.036)</div><div class="note">Wider radial drift than the keyboard's &#8212; the shell is bigger.</div><div class="at">collection:242</div></div>
+<div class="row" data-s="hgtamp / hgtfreq rand(0.05, 0.16) / rand(0.010, 0.030) likewise for height."><div class="name">hgtAmp / hgtFreq</div><div class="val">rand(0.05, 0.16) / rand(0.010, 0.030)</div><div class="note">Likewise for height.</div><div class="at">collection:243</div></div>
+<div class="row" data-s="flapspeed / flapamp rand(18, 27) / rand(0.9, 1.3) same wingbeat as the keys."><div class="name">flapSpeed / flapAmp</div><div class="val">rand(18, 27) / rand(0.9, 1.3)</div><div class="note">Same wingbeat as the keys.</div><div class="at">collection:244</div></div>
+</div>
+</section>
+<p class="empty" id="empty" hidden>Nothing matches that.</p>
+<footer><span>Butterflies VR &#8212; generative DNA build</span><span><code>versions/v11/</code></span><span>Tuning pages: <code>tools/shape-preview.html</code>, <code>tools/colour-preview.html</code></span></footer>
+</div>
+<script>
+(function(){
+  var q=document.getElementById('q'), chips=document.getElementById('chips'),
+      hits=document.getElementById('hits'), empty=document.getElementById('empty'),
+      rows=[].slice.call(document.querySelectorAll('.row')),
+      secs=[].slice.call(document.querySelectorAll('section.file')),
+      file='all';
+
+  function apply(){
+    var t=q.value.trim().toLowerCase(), n=0;
+    rows.forEach(function(r){
+      var sec=r.closest('section.file');
+      var ok=(file==='all'||sec.dataset.file===file) && (!t||r.dataset.s.indexOf(t)>-1);
+      r.hidden=!ok; if(ok)n++;
+    });
+    secs.forEach(function(s){
+      var any=s.querySelector('.row:not([hidden])');
+      s.hidden=!any;
+      if(any){
+        // hide groups that emptied out
+        [].forEach.call(s.querySelectorAll('.rows'),function(g){
+          var live=g.querySelector('.row:not([hidden])');
+          g.hidden=!live;
+          var h=g.previousElementSibling;
+          if(h&&h.classList.contains('group')) h.hidden=!live;
+        });
+      }
+    });
+    hits.textContent=n+' shown';
+    empty.hidden=n>0;
+  }
+
+  q.addEventListener('input',apply);
+  chips.addEventListener('click',function(e){
+    var b=e.target.closest('.chip'); if(!b)return;
+    file=b.dataset.f;
+    [].forEach.call(chips.children,function(c){c.setAttribute('aria-pressed',String(c===b));});
+    apply();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}
+    if(e.key==='Escape'&&document.activeElement===q){q.value='';apply();q.blur();}
+  });
+})();
+</script>

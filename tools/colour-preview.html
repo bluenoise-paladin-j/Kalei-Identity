@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>wing base-colour — preview (v8.7)</title>
+<style>
+  body { margin: 0; background: #f4f4f4; font: 12px/1.4 'Helvetica Neue', Arial, sans-serif; color: #222; }
+  header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #ccc; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: flex-start; }
+  header > div { display: flex; flex-direction: column; gap: 3px; }
+  header label { font-weight: 600; }
+  textarea { width: 260px; height: 60px; font: 11px monospace; }
+  input[type=range] { width: 150px; }
+  .val { font: 11px monospace; color: #666; }
+  #copy { font: 11px monospace; white-space: pre; background: #f0f0f0; padding: 6px 8px; border: 1px solid #ddd; }
+  #determ { font-weight: 600; padding: 4px 8px; border-radius: 3px; }
+  .pass { background: #d6f5d6; color: #1a6b1a; }
+  .fail { background: #f7d6d6; color: #9b1c1c; }
+  #grid { padding: 14px; display: flex; flex-wrap: wrap; gap: 16px; }
+  figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  canvas { image-rendering: pixelated; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+  figcaption { font: 11px monospace; text-align: center; color: #555; max-width: 160px; word-break: break-all; }
+</style>
+<!-- config.js defines CFG.panelPos = function(){ new THREE.Vector3(...) } but never CALLS it
+     at load, so THREE is not needed. WingColour.render() is pure Canvas2D. -->
+<script src="../js/config.js"></script>
+<script src="../js/name-dna.js"></script>
+<script src="../js/rolltable.js"></script>
+<script src="../js/wing-gen.js"></script>
+<script src="../js/wing-colour.js"></script>
+</head>
+<body>
+<header>
+  <div>
+    <label for="names">names / words (one per line)</label>
+    <textarea id="names">ANNA
+ANA
+NANA
+JARED
+MERIDIAN
+SERAPHINE
+IVY
+OBERON
+ZED
+KO</textarea>
+  </div>
+  <div>
+    <label for="mode">mode</label>
+    <select id="mode">
+      <option value="names">names</option>
+      <option value="sweep">seed sweep 0..47</option>
+    </select>
+  </div>
+  <div>
+    <label for="ramt">wingColRandAmt <span class="val" id="ramtV"></span></label>
+    <input type="range" id="ramt" min="0" max="1" step="0.01">
+  </div>
+  <div>
+    <label for="style">wingColStyle (the pattern)</label>
+    <select id="style">
+      <option>random</option><option>stripes</option><option>checker</option>
+      <option>dots</option><option>rings</option><option>sunburst</option>
+    </select>
+  </div>
+  <div>
+    <label for="blend">wingColBlend</label>
+    <select id="blend">
+      <option>random</option><option>normal</option><option>difference</option>
+      <option>multiply</option><option>screen</option><option>exclusion</option>
+    </select>
+  </div>
+  <div>
+    <label for="hues">wingColHues <span class="val" id="huesV"></span></label>
+    <input type="range" id="hues" min="3" max="10" step="1">
+  </div>
+  <div>
+    <label for="shapes">wingColShapes <span class="val" id="shapesV"></span></label>
+    <input type="range" id="shapes" min="0" max="5" step="1">
+  </div>
+  <div>
+    <label for="pscale">wingColPatternScale <span class="val" id="pscaleV"></span></label>
+    <input type="range" id="pscale" min="0.25" max="4" step="0.05">
+  </div>
+  <div>
+    <label for="aa">wingColAA (px) <span class="val" id="aaV"></span></label>
+    <input type="range" id="aa" min="0" max="2" step="0.1">
+  </div>
+  <div>
+    <label><input type="checkbox" id="mask"> composite against the wing silhouette</label>
+    <label><input type="checkbox" id="big" checked> 2× scale</label>
+    <span id="determ"></span>
+    <span id="perf" class="val"></span>
+  </div>
+  <div>
+    <label>paste into config.js</label>
+    <span id="copy"></span>
+  </div>
+</header>
+<div id="grid"></div>
+
+<script>
+(function () {
+  'use strict';
+  var W = WingColour.W, H = WingColour.H;
+  var el = function (id) { return document.getElementById(id); };
+  var grid = el('grid');
+
+  el('ramt').value   = CFG.wingColRandAmt;
+  el('style').value  = CFG.wingColStyle;
+  el('blend').value  = CFG.wingColBlend;
+  el('hues').value   = CFG.wingColHues;
+  el('shapes').value = CFG.wingColShapes;
+  el('pscale').value = CFG.wingColPatternScale;
+  el('aa').value     = CFG.wingColAA;
+
+  function knobs() {
+    return {
+      ramt: +el('ramt').value, style: el('style').value,
+      blend: WingColour.BLENDS.indexOf(el('blend').value),
+      hues: +el('hues').value, shapes: +el('shapes').value,
+      pscale: +el('pscale').value, aa: +el('aa').value
+    };
+  }
+
+  //  Two things measured rather than eyeballed. BLACK is deliberate now,
+  //  so what matters is that it stays SPARING -- the dark-pixel percentage
+  //  across the whole sheet, not a per-wing floor. GREY is still a fault:
+  //  it is what stacking blends drifts toward, invisible on one cell and
+  //  obvious across twenty-four.
+  var PALSET = {};
+  WingColour.PALETTE.forEach(function (h) {
+    PALSET[parseInt(h.substr(1, 2), 16) + ',' + parseInt(h.substr(3, 2), 16) + ',' +
+           parseInt(h.substr(5, 2), 16)] = 1;
+  });
+  var accMs = 0, accN = 0, accExact = 0, accChN = 0, accMinC = 99, accInk = 9;
+  function measure(cv, ms) {
+    accMs += ms; accN++;
+    var d = cv.getContext('2d').getImageData(0, 0, W, H).data;
+    for (var i = 0; i < d.length; i += 4) {
+      var r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+      var mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      //  a pixel that is NOT an exact palette entry is a blend-mode
+      //  result, which is the point of v8.6 -- report the split, do not
+      //  treat it as a fault
+      if (PALSET[d[i] + ',' + d[i + 1] + ',' + d[i + 2]]) { accExact++; }
+      accChN++;
+    }
+  }
+
+  //  a WingGen silhouette to composite against, so you see the real wing
+  var shapeCanvas = document.createElement('canvas');
+  shapeCanvas.width = W; shapeCanvas.height = H;
+  function silhouette(dials) {
+    WingGen.drawWing(shapeCanvas, dials, {});
+    return shapeCanvas;   // white-on-black
+  }
+
+  function cell(label, seed, hue, dials) {
+    var k = knobs();
+    var fig = document.createElement('figure');
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var t0 = performance.now();
+    WingColour.render(cv, seed, hue, k);
+    measure(cv, performance.now() - t0);
+
+    if (el('mask').checked && dials) {
+      //  keep colour only where the silhouette is white
+      var sh = silhouette(dials);
+      var cx = cv.getContext('2d');
+      cx.globalCompositeOperation = 'destination-in';
+      //  build an alpha version of the silhouette (white -> opaque)
+      var tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H;
+      var td = tmp.getContext('2d');
+      td.drawImage(sh, 0, 0);
+      var im = td.getImageData(0, 0, W, H);
+      for (var i = 0; i < im.data.length; i += 4) { im.data[i + 3] = im.data[i]; }
+      td.putImageData(im, 0, 0);
+      cx.drawImage(tmp, 0, 0);
+      cx.globalCompositeOperation = 'source-over';
+    }
+
+    var scale = el('big').checked ? 2 : 1;
+    cv.style.width = (W * scale) + 'px';
+    cv.style.height = (H * scale) + 'px';
+    fig.appendChild(cv);
+    var cap = document.createElement('figcaption');
+    var I = WingColour.info();
+    if (I.minContrast > 0 && I.minContrast < accMinC) { accMinC = I.minContrast; }
+    if (I.ink < accInk) { accInk = I.ink; }
+    cap.textContent = label + '  ' + I.shapes + '  bg:' + I.bgPattern +
+                      '  ink ' + I.ink + '  ' + I.minContrast + ':1' +
+                      (I.lines ? '  +' + I.lines + ' lines' : '');
+    fig.appendChild(cap);
+    return fig;
+  }
+
+  function render() {
+    var k = knobs();
+    el('ramtV').textContent = k.ramt.toFixed(2);
+    el('huesV').textContent = k.hues;
+    el('shapesV').textContent = k.shapes === 0 ? 'auto (1-3)' : k.shapes;
+    el('pscaleV').textContent = k.pscale.toFixed(2);
+    el('aaV').textContent = k.aa === 0 ? '0 (hard)' : k.aa.toFixed(1);
+    el('copy').textContent =
+      "wingColRandAmt:  " + k.ramt + ",\n" +
+      "wingColStyle:    '" + k.style + "',\n" +
+      "wingColHues:     " + k.hues + ",\n" +
+      "wingColShapes:   " + k.shapes + ",\n" +
+      "wingColBlend:    '" + el('blend').value + "',\n" +
+      "wingColPatternScale: " + k.pscale + ",\n" +
+      "wingColAA:       " + k.aa + ",";
+
+    grid.innerHTML = '';
+    accMs = 0; accN = 0; accExact = 0; accChN = 0; accMinC = 99; accInk = 9;
+
+    if (el('mode').value === 'sweep') {
+      for (var s = 0; s < 48; s++) {
+        //  a bare seed sweep: pick an arbitrary hue spread across the wheel
+        grid.appendChild(cell('#' + s, s, (s * 0.61803398875) % 1, null));
+      }
+    } else {
+      var names = el('names').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+      names.forEach(function (n) {
+        var v = NameDNA.toValues(n);
+        if (!v) { return; }
+        grid.appendChild(cell(NameDNA.clean(n), WingColour.seedFor(v), WingColour.nameHueFor(v), dialsFor(v)));
+      });
+    }
+
+    //  determinism cell: same name rendered twice must be byte-identical
+    var dv = NameDNA.toValues('ANNA');
+    var a = document.createElement('canvas'), b = document.createElement('canvas');
+    a.width = b.width = W; a.height = b.height = H;
+    WingColour.render(a, WingColour.seedFor(dv), WingColour.nameHueFor(dv), k);
+    WingColour.render(b, WingColour.seedFor(dv), WingColour.nameHueFor(dv), k);
+    var ok = a.toDataURL() === b.toDataURL();
+    var d = el('determ');
+    d.textContent = ok ? "determinism: PASS" : "determinism: FAIL";
+    d.className = ok ? 'pass' : 'fail';
+
+    el('perf').textContent = accN
+      ? (accMs / accN).toFixed(1) + ' ms/wing   exact palette ' +
+        (100 * accExact / accChN).toFixed(1) + '%   min contrast ' + accMinC.toFixed(2) +
+        ':1   min ink ' + accInk.toFixed(2)
+      : '';
+  }
+
+  //  DNA.dialsFor lives in dna-store.js which we don't load here; recreate
+  //  the -1..1 -> 0..1 wrap so the silhouette composite matches the scene.
+  function dialsFor(values) {
+    return values.map(function (x) {
+      var d = (Number(x) + 1) * 0.5;
+      d = ((d % 1) + 1) % 1;
+      return Number(d.toFixed(6));
+    });
+  }
+
+  ['names', 'mode', 'ramt', 'style', 'blend', 'hues', 'shapes', 'pscale', 'aa', 'mask', 'big'].forEach(function (id) {
+    el(id).addEventListener('input', render);
+    el(id).addEventListener('change', render);
+  });
+  render();
+})();
+</script>
+</body>
+</html>

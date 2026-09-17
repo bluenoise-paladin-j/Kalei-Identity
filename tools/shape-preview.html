@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>wing shape — fit preview (v8.7)</title>
+<style>
+  body { margin: 0; background: #f4f4f4; font: 12px/1.4 'Helvetica Neue', Arial, sans-serif; color: #222; }
+  header { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid #ccc; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: flex-start; }
+  header > div { display: flex; flex-direction: column; gap: 3px; }
+  header label { font-weight: 600; }
+  textarea { width: 240px; height: 58px; font: 11px monospace; }
+  input[type=range] { width: 150px; }
+  .val { font: 11px monospace; color: #666; }
+  #stats { font: 11px/1.5 monospace; white-space: pre; background: #f0f0f0; padding: 6px 8px; border: 1px solid #ddd; }
+  #grid { padding: 14px; display: flex; flex-wrap: wrap; gap: 14px; }
+  figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .pair { display: flex; gap: 3px; }
+  canvas { image-rendering: pixelated; background: #000; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+  figcaption { font: 10px monospace; text-align: center; color: #555; max-width: 200px; word-break: break-all; }
+  .tag { font: 10px monospace; color: #888; }
+</style>
+<!-- Pure Canvas2D: no THREE, no A-Frame. config.js only DEFINES CFG. -->
+<script src="../js/config.js"></script>
+<script src="../js/name-dna.js"></script>
+<script src="../js/rolltable.js"></script>
+<script src="../js/wing-gen.js"></script>
+<script src="../js/textures.js"></script>
+</head>
+<body>
+<header>
+  <div>
+    <label for="names">names (one per line)</label>
+    <textarea id="names">ANNA
+ANA
+NANA
+JARED
+MERIDIAN
+SERAPHINE
+IVY
+OBERON
+ZED
+KO
+CVVFYAEZOV
+YLYDC
+JSZIU
+OFYYFUWTS
+FXCWZCC
+ITPA
+QSMR
+RUZBBNUE</textarea>
+  </div>
+  <div>
+    <label for="mode">mode</label>
+    <select id="mode">
+      <option value="names">names</option>
+      <option value="random">random names (24)</option>
+      <option value="az">the 26 keyboard letters</option>
+    </select>
+    <button id="reroll">reroll</button>
+  </div>
+  <div>
+    <label for="fill">wingFitFill <span class="val" id="fillV"></span></label>
+    <input type="range" id="fill" min="0" max="1" step="0.01">
+    <label for="seam">wingFitSeam <span class="val" id="seamV"></span></label>
+    <input type="range" id="seam" min="0" max="1" step="0.01">
+  </div>
+  <div>
+    <label for="gain">wingFitGain <span class="val" id="gainV"></span></label>
+    <input type="range" id="gain" min="1" max="1.4" step="0.01">
+    <label for="marg">wingFitMargin px <span class="val" id="margV"></span></label>
+    <input type="range" id="marg" min="0" max="6" step="0.5">
+  </div>
+  <div>
+    <label for="view">view</label>
+    <select id="view">
+      <option value="slice">the slice, as generated</option>
+      <option value="bfly">as the butterfly — both wings, on the body</option>
+    </select>
+    <label><input type="checkbox" id="side" checked> show v8.6 beside it</label>
+    <label><input type="checkbox" id="frame" checked> outline the slice</label>
+    <label for="zoom">zoom <span class="val" id="zoomV"></span></label>
+    <input type="range" id="zoom" min="1" max="3" step="0.5" value="1.5">
+  </div>
+  <div>
+    <label>measured over 2000 names</label>
+    <div id="stats">…</div>
+  </div>
+</header>
+<div id="grid"></div>
+
+<script>
+'use strict';
+var W = WingGen.SLICE_W, H = WingGen.SLICE_H;
+var OFF = { fitFill: 0, fitSeam: 0, fitGain: 1, fitMargin: 0 };   // v8.6 exactly
+
+function dialsFor(name) {
+  var v = NameDNA.toValues(name);
+  if (!v) { return [0, 0, 0, 0]; }
+  return v.map(function (x) { var d = (x + 1) / 2; return ((d % 1) + 1) % 1; });
+}
+// keyboard.js's own per-letter dials, so the 26 keys can be checked too
+function dialsForLetter(i) {
+  var h = 2166136261;
+  var s = 'K' + i;
+  for (var j = 0; j < s.length; j++) { h ^= s.charCodeAt(j); h = Math.imul(h, 16777619); }
+  var out = [];
+  for (var k = 0; k < 4; k++) { h = Math.imul(h ^ (h >>> 15), 2246822507); out.push(((h >>> 0) % 100000) / 100000); }
+  return out;
+}
+
+// --- what fraction of the slice's pixels the wing paints -----------
+function inkOf(canvas) {
+  var d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+  var n = 0;
+  for (var i = 0; i < d.length; i += 4) { if (d[i] > 127) { n++; } }
+  return n / (canvas.width * canvas.height);
+}
+
+//  THE BUTTERFLY VIEW. What bfly-model.js actually builds, seen from
+//  above with the wings flat: one slice per side, mirrored, laid across
+//  a body. The slice's along-body axis becomes the vertical here (the
+//  plane's UVs do that 90-degree turn -- see bfly-model.js), the head is
+//  at the FORE end, and the body plane covers the middle
+//  BODY_SPAN of the wing plane's length: the body plane is s*1.5 long and
+//  the wing plane s*CFG.wingPlane*2. DERIVED, not written down -- v8.7 cut
+//  wingPlane from 0.85 to 0.595 and the ratio crossed 1 on the way, so the
+//  body is now LONGER than the wing plane and correctly overhangs the
+//  slice at both ends.
+var BODY_SPAN = 1.5 / (2 * CFG.wingPlane);
+//  BODY_ALPHA is an opaque white-on-black mask, so drawing it straight
+//  on top of a white wing shows nothing at all. Key the black out once
+//  on load and keep a tinted copy.
+var BODY_IMG = new Image(), BODY_TINT = null, BODY_CU = 0.5, BODY_CV = 0.5;
+BODY_IMG.onload = function () {
+  var n = 256, c = document.createElement('canvas');
+  c.width = n; c.height = n;
+  var x = c.getContext('2d');
+  x.drawImage(BODY_IMG, 0, 0, n, n);
+  var d = x.getImageData(0, 0, n, n);
+  for (var i = 0; i < d.data.length; i += 4) {
+    var v = d.data[i];
+    d.data[i] = 255; d.data[i + 1] = 70; d.data[i + 2] = 70;
+    d.data[i + 3] = v;                       // white -> opaque, black -> gone
+  }
+  x.putImageData(d, 0, 0);
+  //  Where the drawn body LINE sits inside the square. bfly-model shifts
+  //  the body plane by -s*0.63 so that line lands level with the wings,
+  //  which means the ink is nowhere near the middle of its own texture.
+  //  Measuring the ink centroid is self-correcting; deriving it from that
+  //  0.63 by hand is one sign error away from a body drawn off the side.
+  var sx = 0, sy = 0, sw = 0;
+  for (var yy = 0; yy < n; yy++) {
+    for (var xx = 0; xx < n; xx++) {
+      var a = d.data[(yy * n + xx) * 4 + 3];
+      if (a > 8) { sx += xx * a; sy += yy * a; sw += a; }
+    }
+  }
+  BODY_CU = sw ? sx / sw / n : 0.5;
+  BODY_CV = sw ? sy / sw / n : 0.5;
+  BODY_TINT = c;
+  render();
+};
+BODY_IMG.src = BODY_ALPHA;
+function drawButterfly(dst, slice, z) {
+  var bw = Math.max(6, Math.round(W * 0.12));      // body bar, arbitrary but constant
+  dst.width = W * 2 + bw; dst.height = H;
+  dst.style.width = ((W * 2 + bw) * z) + 'px'; dst.style.height = (H * z) + 'px';
+  var x = dst.getContext('2d');
+  x.fillStyle = '#000'; x.fillRect(0, 0, dst.width, dst.height);
+
+  // THE REAL BODY. bfly-model builds it as a SQUARE plane of s*1.5 with
+  // BODY_ALPHA on it, so the drawn body -- head, abdomen, antennae --
+  // is wherever that image puts it. Drawing the actual texture is the
+  // only way to see whether a wing sits on the body or in front of the
+  // head. The square's along-body span is BODY_SPAN of the wing plane's,
+  // centred on it, and it is turned a quarter so the head points up
+  // (the fore end), matching the slices either side of it.
+  var bh = H * BODY_SPAN, by = (H - bh) / 2;
+  function body() {
+    x.save();
+    x.translate(W + bw / 2, by + bh / 2);
+    //  canvas rotate(+PI/2) sends local +x to screen +y, so the texture's
+    //  low-u end -- the head -- comes out at the TOP, which is the fore
+    //  end of the slices either side of it. (-PI/2 lands it at the tail;
+    //  the giveaway is antennae trailing behind the abdomen.)
+    x.rotate(Math.PI / 2);
+    if (BODY_TINT) {
+      //  centre the square on the frame ALONG the body (that is where the
+      //  plane is), and on the measured ink line ACROSS it (that is where
+      //  the wings meet it).
+      x.drawImage(BODY_TINT, -bh / 2, -(BODY_CV) * bh, bh, bh);
+    } else {
+      x.fillStyle = '#f44'; x.fillRect(-bw / 2, -bh / 2, bw, bh);
+    }
+    x.restore();
+  }
+
+  // the two wings. The slice is drawn root-left / fore-up already, which
+  // is exactly the right-hand wing seen from above; the left is its
+  // mirror.
+  x.drawImage(slice, W + bw, 0);
+  x.save(); x.translate(W, 0); x.scale(-1, 1); x.drawImage(slice, 0, 0); x.restore();
+  body();
+}
+
+function opts() {
+  return {
+    fitFill: +document.getElementById('fill').value,
+    fitSeam: +document.getElementById('seam').value,
+    fitGain: +document.getElementById('gain').value,
+    fitMargin: +document.getElementById('marg').value
+  };
+}
+
+function makeCanvas(z) {
+  var c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  c.style.width = (W * z) + 'px'; c.style.height = (H * z) + 'px';
+  return c;
+}
+
+function outline(c) {
+  var x = c.getContext('2d');
+  x.strokeStyle = 'rgba(255,80,80,.55)'; x.lineWidth = 1;
+  x.strokeRect(0.5, 0.5, c.width - 1, c.height - 1);
+}
+
+var seed = 1;
+function randomNames(n) {
+  var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', out = [], s = seed;
+  function r() { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }
+  for (var i = 0; i < n; i++) {
+    var len = 3 + Math.floor(r() * 8), t = '';
+    for (var j = 0; j < len; j++) { t += A[Math.floor(r() * 26)]; }
+    out.push(t);
+  }
+  return out;
+}
+
+function render() {
+  var o = opts(), z = +document.getElementById('zoom').value;
+  var side = document.getElementById('side').checked;
+  var fr = document.getElementById('frame').checked;
+  var view = document.getElementById('view').value;
+  document.getElementById('fillV').textContent = o.fitFill.toFixed(2);
+  document.getElementById('seamV').textContent = o.fitSeam.toFixed(2);
+  document.getElementById('gainV').textContent = o.fitGain.toFixed(2);
+  document.getElementById('margV').textContent = o.fitMargin.toFixed(1);
+  document.getElementById('zoomV').textContent = z.toFixed(1) + 'x';
+
+  var mode = document.getElementById('mode').value, items = [];
+  if (mode === 'az') {
+    for (var i = 0; i < 26; i++) { items.push({ label: 'key ' + String.fromCharCode(65 + i), dials: dialsForLetter(i) }); }
+  } else {
+    var names = mode === 'random' ? randomNames(24)
+      : document.getElementById('names').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    items = names.map(function (n) { return { label: n, dials: dialsFor(NameDNA.clean(n)) }; });
+  }
+
+  var grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  items.forEach(function (it) {
+    var fig = document.createElement('figure');
+    var pair = document.createElement('div'); pair.className = 'pair';
+    function one(op) {
+      var c = makeCanvas(z);
+      var P = WingGen.drawWing(c, it.dials, op);
+      var ink = inkOf(c);
+      if (fr && view === 'slice') { outline(c); }
+      if (view === 'bfly') {
+        var b = document.createElement('canvas');
+        drawButterfly(b, c, z);
+        pair.appendChild(b);
+      } else {
+        pair.appendChild(c);
+      }
+      return { P: P, ink: ink };
+    }
+    var oldInk = 0;
+    if (side) { oldInk = one(OFF).ink; }
+    var r1 = one(o), P = r1.P, ink = r1.ink;
+    fig.appendChild(pair);
+    var cap = document.createElement('figcaption');
+    cap.textContent = it.label + '\n' + (side ? (oldInk * 100).toFixed(1) + '% → ' : '') +
+      (ink * 100).toFixed(1) + '%   k ' + P.fit.k.toFixed(2) + ' / ' + P.fit.headroom.toFixed(2);
+    cap.style.whiteSpace = 'pre-line';
+    fig.appendChild(cap);
+    grid.appendChild(fig);
+  });
+
+  stats(o);
+}
+
+// --- the distribution, measured on the polygons (no rasterising) ----
+function polyArea(p) {
+  var a = 0;
+  for (var i = 0; i < p.length; i++) { var j = (i + 1) % p.length; a += p[i][0] * p[j][1] - p[j][0] * p[i][1]; }
+  return Math.abs(a) / 2;
+}
+var STAT_NAMES = null;
+function stats(o) {
+  if (!STAT_NAMES) { seed = 12345; STAT_NAMES = randomNames(2000); seed = 1; }
+  var fit = (H * WingGen.DEFAULTS.fitScale) / 2, frame = (W / fit) * (H / fit);
+  var oldA = [], newA = [];
+  for (var i = 0; i < STAT_NAMES.length; i++) {
+    var d = dialsFor(STAT_NAMES[i]);
+    var P = WingGen.expand(d, 0, 0.5, 0.9, 0.055, 0.02, 1.0);
+    var f = WingGen.forewing(P), h = WingGen.hindwing(P);
+    var a = polyArea(f) + polyArea(h);
+    var plan = WingGen.fitPlan([h, f], (W - o.fitMargin) / fit,
+      (H / 2 - o.fitMargin) / fit, (H / 2 - o.fitMargin) / fit,
+      o.fitFill, o.fitSeam, o.fitGain);
+    oldA.push(a / frame); newA.push(a * plan.k * plan.k / frame);
+  }
+  function q(a, p) { var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(p * (s.length - 1))]; }
+  function row(tag, a) {
+    return tag.padEnd(7) + ['0.05', '0.25', '0.5', '0.75', '0.95'].map(function (p) {
+      return (100 * q(a, +p)).toFixed(1) + '%';
+    }).join('  ').padEnd(34) + ' spread ' + (q(a, 0.95) / q(a, 0.05)).toFixed(2);
+  }
+  document.getElementById('stats').textContent =
+    'slice fill  p05    p25    med    p75    p95\n' + row('v8.6', oldA) + '\n' + row('now', newA);
+}
+
+['fill', 'seam', 'gain', 'marg', 'zoom'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', render);
+});
+['side', 'frame', 'mode', 'view'].forEach(function (id) {
+  document.getElementById(id).addEventListener('change', render);
+});
+document.getElementById('names').addEventListener('input', render);
+document.getElementById('reroll').addEventListener('click', function () { seed = (seed * 7919 + 13) & 0x7fffffff; render(); });
+
+document.getElementById('fill').value = CFG.wingFitFill;
+document.getElementById('seam').value = CFG.wingFitSeam;
+document.getElementById('gain').value = CFG.wingFitGain;
+document.getElementById('marg').value = CFG.wingFitMargin;
+render();
+</script>
+</body>
+</html>
