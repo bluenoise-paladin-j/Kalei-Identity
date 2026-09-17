@@ -5,17 +5,16 @@ design through a butterfly keyboard. Catch butterflies one at a time to spell yo
 building the genetic code of your own butterfly. Send it into a kaleidoscope that accumulates
 across the exhibition, growing with every visitor's interaction.
 
-Twenty-six butterflies hang in the air in front of you, and together they are the keyboard.
+Twenty-six butterflies fly in the air in front of you; together they are the keyboard.
 Each one carries a single letter. The name you spell is hashed into the four values the wing
 generator grows a butterfly from, so the same name always grows the same butterfly, and names
 of any length spread evenly: ANA and ANNA are visibly different rather than near-identical.
 
 That gives the piece two scales of identity at once. The individual butterfly is a portrait of
 the participant; the whole kaleidoscope is a portrait of the community. The room begins empty
-and fills over the course of a day, one butterfly per visitor, and every butterfly made stays
-for the rest of the exhibition.
+and fills over the course of an exhibition.
 
-**Version 11**, the build shown at the exhibition.
+**Version 11**, the build shown at the DMS 3 Showcase 2026.
 
 ## The interaction
 
@@ -29,7 +28,7 @@ The hands are the whole interface. No controllers and no menus.
 4. **Accept** the name. Your butterfly springs out of the letters, holds still with its wings
    square on so it can actually be looked at, then launches up into the kaleidoscope, trailing
    the letters of your name behind it.
-5. **Call it back.** Your butterfly is still yours. Pinch it and it leaves the kaleidoscope,
+5. **Call it back.** Pinch it and it leaves the kaleidoscope,
    flies over, and either lands on a raised flat open palm or hovers in front of you before
    flying home.
 
