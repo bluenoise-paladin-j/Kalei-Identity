@@ -89,10 +89,10 @@ TouchDesigner script from an earlier version of the project. Developed with Clau
 
 ## Credits
 
-Duy Khai — installation, interaction, concept
-Jared Amuso — concept, development, interaction, system flow
-Uyen Thu — sound, concept, installation
-Lan Thanh — sound, concept, installation
+- **Duy Khai** — installation, interaction, concept
+- **Jared Amuso** — concept, development, interaction, system flow
+- **Uyen Thu** — sound, concept, installation
+- **Lan Thanh** — sound, concept, installation
 
 Sound: [Forest Atmosphere](https://sound-effects.bbcrewind.co.uk/search?q=NHU05003049)
 (C. Watson, BBC Sound Effects) · [Meditation](https://freesound.org/s/655395/)
