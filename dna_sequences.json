@@ -1,0 +1,30 @@
+{
+  "sequences": [
+    {
+      "id": 1,
+      "created": "2026-09-09T05:39:53",
+      "source": "butterfly-keyboard",
+      "channel": "name",
+      "values": [
+        -0.246,
+        -0.858482,
+        0.675991,
+        -0.410884
+      ],
+      "name": "ANA"
+    },
+    {
+      "id": 2,
+      "created": "2026-09-09T05:53:55",
+      "source": "butterfly-keyboard",
+      "channel": "name",
+      "values": [
+        0.039421,
+        0.242787,
+        0.544632,
+        0.790592
+      ],
+      "name": "KNZ"
+    }
+  ]
+}

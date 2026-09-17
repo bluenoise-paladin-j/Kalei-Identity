@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Butterfly Keyboard — v11</title>
+  <meta name="description" content="Twenty-six butterflies are a keyboard. Press the flower to begin, spell your name, and it grows one. Hold your hand out and it will come back to you.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>
+    body { margin: 0; background: #ffffff; }
+  </style>
+
+  <!-- A-FRAME IS VENDORED, and that is an exhibition decision, not tidiness.
+       Loaded from the CDN alone, this whole piece is a blank white page on a
+       floor whose wi-fi is down, behind a captive portal, or simply slow --
+       and a headset has no address bar to diagnose it with. The local copy
+       is byte-identical to the 1.6.0 release; the CDN stays as the fallback
+       for the case where the file is missing from a snapshot. document.write
+       is deliberate: it is the one way to insert a blocking script that still
+       runs BEFORE the tags below it, which all need AFRAME/THREE to exist. -->
+  <script src="vendor/aframe-1.6.0.min.js"></script>
+  <script>
+    if (!window.AFRAME) {
+      document.write('<scr' + 'ipt src="https://aframe.io/releases/1.6.0/aframe.min.js"><\/scr' + 'ipt>');
+    }
+  </script>
+
+  <!-- the wing generator, unchanged from v2 (parity with TouchDesigner) -->
+  <script src="js/rolltable.js"></script>
+  <script src="js/wing-gen.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/wing-tex.js"></script>
+
+  <!-- v10.5: the two control glyphs (accept/delete), baked from icons/svg/. Before ui.js, which loads them. -->
+  <script src="js/icons.js"></script>
+
+  <!-- v7: a name -> four values -> a stored, accumulating collection -->
+  <script src="js/name-dna.js"></script>
+  <script src="js/dna-store.js"></script>
+
+  <!-- the piece -->
+  <script src="js/config.js"></script>
+  <script src="js/style.js"></script>
+  <!-- v8: the per-name base-colour texture (collection butterflies only). After
+       config.js (reads CFG.wingCol*), after wing-gen.js (SLICE_W/H); before collection.js -->
+  <script src="js/wing-colour.js"></script>
+  <script src="js/bfly-model.js"></script>
+  <script src="js/ui.js"></script>
+  <!-- v10: the narration. After config.js (it reads CFG.voCues) and
+       before guide.js, which is the only thing that calls it. -->
+  <script src="js/voice.js"></script>
+  <!-- v10.4: the room's sound -- the music bed, the wingbeats and the
+       select click. After config.js (CFG.sfx*) and after voice.js, whose
+       playing() it ducks under; guide.js boots and ticks it. -->
+  <script src="js/sfx.js"></script>
+  <!-- v9: hands.js now also publishes the PALM (position, normal, and
+       whether it is being held out flat and up), which collection.js
+       reads to decide where a called-over butterfly lands. After
+       config.js -- it reads CFG.palm* -->
+  <script src="js/hands.js"></script>
+  <!-- v8.1/8.2: the reveal's dim/slow envelope and the wake of shed letters.
+       After ui.js (UI.letterTex) and style.js (Style.forLetter); BEFORE
+       keyboard.js, which reads Reveal.dim / Reveal.slow every frame. -->
+  <script src="js/reveal.js"></script>
+  <script src="js/keyboard.js"></script>
+  <!-- collection.js after keyboard.js: it reuses the flight globals defined there -->
+  <script src="js/collection.js"></script>
+  <!-- v10: the session. A THIRD PROVIDER, so it must be registered
+       before interact.js scans for one. It owns the start flower and the
+       idle/welcome/live/wrapup/farewell arc, and it reads Reveal.active
+       and the collection's exclusive() to know when the visitor cannot
+       act -- hence after reveal.js and collection.js. -->
+  <script src="js/guide.js"></script>
+  <script src="js/interact.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body>
+  <!-- PASSTHROUGH.
+       xr-mode-ui XRMode:xr offers both buttons; AR is the one that keeps
+       the room. hide-on-enter-ar drops the black sky so the passthrough
+       feed shows through behind the butterflies, and A-Frame clears to
+       transparent in an immersive-ar session by itself. The sky is white
+       rather than black so the void reads as light on a desktop and the
+       flat colours sit the same way in both modes.
+       ar-hit-test is ON by default in A-Frame and puts a placement
+       reticle on the floor that this piece has no use for.
+       hand-tracking is asked for explicitly rather than left to the
+       browser to infer from the hand entities. -->
+  <a-scene renderer="antialias: true; colorManagement: true; alpha: true"
+           xr-mode-ui="XRMode: xr"
+           webxr="optionalFeatures: hand-tracking, local-floor, hit-test"
+           ar-hit-test="enabled: false"
+           device-orientation-permission-ui="enabled: false">
+    <a-sky color="#ffffff" hide-on-enter-ar></a-sky>
+
+    <a-entity butterfly-keyboard></a-entity>
+    <!-- v7: the butterflies grown from visitors' names, not pickable -->
+    <a-entity butterfly-collection></a-entity>
+    <!-- v10: the session guide. The room starts as the piece's, not the
+         visitor's: until the flower is pressed nothing else is pickable. -->
+    <a-entity session-guide></a-entity>
+    <a-entity pointer-input></a-entity>
+
+    <a-entity camera look-controls position="0 1.6 0"></a-entity>
+
+    <!-- modelStyle:dots avoids fetching the hand GLTF; hand-rig hides the
+         model outright and publishes the joint data (see js/hands.js) -->
+    <a-entity id="handL" hand-tracking-controls="hand: left; modelStyle: dots" hand-rig></a-entity>
+    <a-entity id="handR" hand-tracking-controls="hand: right; modelStyle: dots" hand-rig></a-entity>
+  </a-scene>
+</body>
+</html>

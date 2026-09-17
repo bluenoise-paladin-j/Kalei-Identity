@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Butterflies — save the collection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  save.html -- get the day's collection off the device, and put one back.
+
+  STANDALONE ON PURPOSE. It loads no A-Frame, no config.js, no dna-store.js
+  and no generator: it reads and writes the one localStorage key directly,
+  in about forty lines of inline script. That is the whole point of it --
+  this is the page you open when something has gone wrong, so it must not
+  be able to go wrong in the same way. It works with the scene broken, with
+  the network down, and on any device that can open a URL.
+
+  It shares an ORIGIN with index.html, which is what makes it work at all:
+  localStorage is per-origin, so opening this at the same github.io address
+  the headset ran the piece at gives you that headset's collection. Opening
+  it anywhere else gives you that device's, which will be empty.
+-->
+<style>
+  :root { color-scheme: light dark; }
+  body { margin:0; padding:32px 24px; background:#2b2b33; color:#e9e9ee;
+         font:15px/1.6 ui-monospace, Menlo, Consolas, monospace; }
+  .wrap { max-width:760px; margin:0 auto; }
+  h1 { font-size:17px; margin:0 0 4px; }
+  p  { color:#a8a8b4; margin:0 0 20px; }
+  .count { font-size:32px; margin:22px 0 2px; }
+  .count small { font-size:14px; color:#a8a8b4; display:block; margin-top:4px; }
+  button { font:inherit; background:#3b3b45; color:#e9e9ee; border:0;
+           padding:14px 20px; margin:0 8px 10px 0; cursor:pointer; }
+  button:hover { background:#4c4c58; }
+  button.go { background:#2f6f45; }
+  button.go:hover { background:#3d8a57; }
+  button.warn { background:#6f2f33; }
+  button.warn:hover { background:#8a3d42; }
+  textarea { width:100%; height:220px; box-sizing:border-box; background:#23232a;
+             color:#cfcfd8; border:1px solid #44444f; padding:12px;
+             font:12px/1.5 ui-monospace, Menlo, Consolas, monospace; }
+  .names { color:#cfcfd8; margin:0 0 20px; word-break:break-word; }
+  h2 { font-size:12px; color:#8f8f9c; letter-spacing:.1em; text-transform:uppercase;
+       margin:34px 0 10px; }
+  .msg { min-height:22px; color:#9fd6b0; margin:10px 0 0; }
+  .msg.bad { color:#e79aa0; }
+  .note { color:#7c7c88; font-size:13px; margin-top:14px; }
+  code { background:#23232a; padding:1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Butterflies — the collection on this device</h1>
+  <p>Same address as the piece, so this is the same storage the piece uses.</p>
+
+  <div class="count" id="count">…</div>
+  <div class="names" id="names"></div>
+
+  <button class="go" id="dl">Download the JSON</button>
+  <button id="copy">Copy to clipboard</button>
+
+  <div class="msg" id="msg"></div>
+
+  <h2>The collection, as text</h2>
+  <p>If the buttons above are awkward in a headset, select this and copy it by hand.
+     Pasting a collection in here and pressing Restore replaces what is on this device.</p>
+  <textarea id="json" spellcheck="false"></textarea>
+  <div style="margin-top:12px">
+    <button id="restore">Restore what is in the box</button>
+    <button class="warn" id="wipe">Wipe this device</button>
+  </div>
+  <p class="note">
+    To start a clean exhibition day, open the piece with <code>?reset=1</code> instead —
+    that clears it on load and is one action rather than two.
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  //  the one key index.html's dna-store.js writes. Kept as a literal
+  //  rather than imported, so this page depends on nothing.
+  var KEY = 'butterflies.dna.v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var current = { sequences: [] };
+
+  function say(text, bad) {
+    var m = $('msg');
+    m.textContent = text || '';
+    m.className = bad ? 'msg bad' : 'msg';
+  }
+
+  function read() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (!raw) { return { sequences: [] }; }
+      var d = JSON.parse(raw);
+      return (d && Array.isArray(d.sequences)) ? d : { sequences: [] };
+    } catch (e) {
+      say('Could not read storage on this device: ' + e, true);
+      return { sequences: [] };
+    }
+  }
+
+  function show() {
+    current = read();
+    var n = current.sequences.length;
+    $('count').innerHTML = n + ' <small>butterfl' + (n === 1 ? 'y' : 'ies') + ' stored here</small>';
+    $('names').textContent = n
+      ? current.sequences.map(function (s) { return s.name || '(unnamed)'; }).join('  ·  ')
+      : 'Nothing stored on this device yet.';
+    $('json').value = JSON.stringify(current, null, 2);
+  }
+
+  //  A date-stamped filename, so a week of exhibition days does not
+  //  overwrite itself in the Downloads folder.
+  function filename() {
+    var d = new Date(), p = function (v) { return (v < 10 ? '0' : '') + v; };
+    return 'dna_sequences_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) +
+           '_' + p(d.getHours()) + p(d.getMinutes()) + '.json';
+  }
+
+  $('dl').addEventListener('click', function () {
+    try {
+      var blob = new Blob([JSON.stringify(current, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename();
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+      say('Saved as ' + filename() + ' — look in this device’s Downloads folder.');
+    } catch (e) {
+      say('Download refused (' + e + '). Copy the text below instead.', true);
+    }
+  });
+
+  $('copy').addEventListener('click', function () {
+    var text = JSON.stringify(current, null, 2);
+    function fallback() {
+      $('json').select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      say(ok ? 'Copied.' : 'Could not copy automatically — select the text below and copy it.', !ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { say('Copied.'); }, fallback);
+    } else { fallback(); }
+  });
+
+  $('restore').addEventListener('click', function () {
+    var d;
+    try { d = JSON.parse($('json').value); }
+    catch (e) { say('That is not valid JSON: ' + e, true); return; }
+    if (!d || !Array.isArray(d.sequences)) { say('Expected { "sequences": [ ... ] }', true); return; }
+    //  the same test dna-store.js:usable() applies, so this page can never
+    //  write something the scene would then throw on
+    var ok = d.sequences.filter(function (s) {
+      if (!s || !Array.isArray(s.values) || s.values.length !== 4) { return false; }
+      for (var i = 0; i < 4; i++) {
+        if (typeof s.values[i] !== 'number' || !isFinite(s.values[i])) { return false; }
+      }
+      return true;
+    });
+    var n = read().sequences.length;
+    if (!window.confirm('Replace the ' + n + ' butterfl' + (n === 1 ? 'y' : 'ies') +
+                        ' on this device with ' + ok.length + '?')) { return; }
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify({ sequences: ok }));
+      show();
+      say('Restored ' + ok.length + '. Reload the piece to see them.' +
+          (ok.length !== d.sequences.length
+            ? ' (' + (d.sequences.length - ok.length) + ' malformed entries skipped.)' : ''));
+    } catch (e) { say('Could not write storage: ' + e, true); }
+  });
+
+  $('wipe').addEventListener('click', function () {
+    var n = read().sequences.length;
+    if (!n) { say('Already empty.'); return; }
+    if (!window.confirm('Delete all ' + n + ' butterflies on this device? Download them first.')) { return; }
+    try { window.localStorage.removeItem(KEY); show(); say('Wiped.'); }
+    catch (e) { say('Could not write storage: ' + e, true); }
+  });
+
+  show();
+})();
+</script>
+</body>
+</html>
